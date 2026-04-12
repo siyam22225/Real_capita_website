@@ -1,158 +1,218 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { newsItems } from "@/data/news";
+import { getNewsBySlug, getOtherNews } from "@/lib/news";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function NewsDetailsPage({ params }: Props) {
+export default async function NewsDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  const article = newsItems.find((item) => item.slug === slug);
+ let news = null;
+let otherNews = [];
 
-  if (!article) {
+try {
+  news = await getNewsBySlug(slug);
+
+  if (!news) {
     notFound();
   }
 
-  const upNext = newsItems.filter((item) => item.slug !== slug).slice(0, 8);
+  otherNews = await getOtherNews(slug);
+} catch (error) {
+  console.error("MEDIA_NEWS_DETAIL_PAGE_ERROR", error);
+  notFound();
+}
 
   return (
     <section
       style={{
-        background: "#f3f3f3",
-        minHeight: "100vh",
-        padding: "50px 0 80px",
+        padding: "56px 0 72px",
+        background: "transparent",
       }}
     >
       <div
+        className="container"
         style={{
           maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 24px",
           display: "grid",
-          gridTemplateColumns: "minmax(0, 2.2fr) minmax(280px, 0.9fr)",
-          gap: "36px",
+          gridTemplateColumns: "minmax(0, 2fr) minmax(280px, 0.9fr)",
+          gap: "30px",
         }}
       >
-        <div>
-          <h1
-            style={{
-              margin: "0 0 20px 0",
-              fontSize: "54px",
-              lineHeight: "1.15",
-              fontWeight: 300,
-              color: "#555",
-            }}
-          >
-            {article.title}
-          </h1>
+        <article
+          style={{
+            background: "#ffffff",
+            border: "1px solid rgba(21,150,212,0.08)",
+            boxShadow: "0 14px 34px rgba(15,23,42,0.08)",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: "28px 28px 18px" }}>
+            <h1
+              style={{
+                margin: "0 0 14px 0",
+                color: "#111827",
+                fontSize: "clamp(30px, 4vw, 58px)",
+                fontWeight: 300,
+                lineHeight: 1.15,
+              }}
+            >
+              {news.title}
+            </h1>
+
+            <p
+              style={{
+                margin: 0,
+                color: "#6b7280",
+                fontSize: "16px",
+              }}
+            >
+              {new Date(news.publishedAt).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
+          </div>
 
           <div
             style={{
               position: "relative",
               width: "100%",
-              height: "420px",
-              background: "#ddd",
-              marginBottom: "18px",
+              aspectRatio: "16 / 9",
+              background: "#e5e7eb",
             }}
           >
             <Image
-              src={article.image}
-              alt={article.title}
+              src={news.imageUrl}
+              alt={news.title}
               fill
-              className="object-cover"
+              style={{ objectFit: "cover" }}
             />
           </div>
 
-          <div
-            style={{
-              marginBottom: "24px",
-              color: "#777",
-              fontSize: "14px",
-              borderBottom: "1px solid #ddd",
-              paddingBottom: "14px",
-            }}
-          >
-            {article.date}
+          <div style={{ padding: "28px" }}>
+            <p
+              style={{
+                margin: "0 0 18px 0",
+                color: "#475569",
+                fontSize: "18px",
+                lineHeight: 1.9,
+              }}
+            >
+              {news.content}
+            </p>
           </div>
-
-          <div style={{ color: "#666", fontSize: "18px", lineHeight: "1.9" }}>
-            {article.fullContent.map((paragraph, index) => (
-              <p key={index} style={{ margin: "0 0 22px 0" }}>
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        </div>
+        </article>
 
         <aside>
-          <h2
-            style={{
-              margin: "0 0 24px 0",
-              color: "#ef4444",
-              fontSize: "34px",
-              fontWeight: 300,
-            }}
-          >
-            Up Next
-          </h2>
-
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "16px",
+              background: "#ffffff",
+              border: "1px solid rgba(21,150,212,0.08)",
+              boxShadow: "0 14px 34px rgba(15,23,42,0.08)",
+              padding: "22px",
             }}
           >
-            {upNext.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                style={{
-                  display: "block",
-                  background: "#fff",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                  overflow: "hidden",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <div
+            <h2
+              style={{
+                margin: "0 0 18px 0",
+                color: "#ef4444",
+                fontSize: "18px",
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Up Next
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "16px",
+              }}
+            >
+              {otherNews.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/media/${item.slug}`}
                   style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "110px",
-                    background: "#ddd",
+                    display: "grid",
+                    gridTemplateColumns: "110px 1fr",
+                    gap: "12px",
+                    textDecoration: "none",
+                    color: "inherit",
+                    alignItems: "start",
                   }}
                 >
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <div style={{ padding: "10px" }}>
-                  <p
+                  <div
                     style={{
-                      margin: 0,
-                      fontSize: "14px",
-                      lineHeight: "1.4",
-                      color: "#666",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
+                      position: "relative",
+                      width: "100%",
+                      aspectRatio: "4 / 3",
+                      background: "#e5e7eb",
                     }}
                   >
-                    {item.title}
-                  </p>
-                </div>
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+
+                  <div>
+                    <h3
+                      style={{
+                        margin: "0 0 6px 0",
+                        color: "#1f2937",
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      {item.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "#6b7280",
+                        fontSize: "13px",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {item.excerpt}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div style={{ marginTop: "20px" }}>
+              <Link
+                href="/media/news"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "12px 18px",
+                  background: "linear-gradient(90deg, #ef4444 0%, #e11d48 100%)",
+                  color: "#ffffff",
+                  textDecoration: "none",
+                  fontSize: "13px",
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Read All News
               </Link>
-            ))}
+            </div>
           </div>
         </aside>
       </div>

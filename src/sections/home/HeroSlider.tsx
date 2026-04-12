@@ -45,25 +45,36 @@ export default function HeroSlider() {
           }}
         >
           {slides.map((slide, index) => (
-            <div
-              key={index}
-              style={{
-                width: `${100 / slides.length}%`,
-                flexShrink: 0,
-                height: "clamp(260px, 55vw, 700px)",
-              }}
-            >
-              <img
-                src={slide}
-                alt={`Slide ${index + 1}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            </div>
+ <div
+  key={index}
+  style={{
+    width: `${100 / slides.length}%`,
+    flexShrink: 0,
+    height: "clamp(260px, 55vw, 700px)",
+    position: "relative",
+  }}
+>
+  <img
+    src={slide}
+    alt={`Slide ${index + 1}`}
+    style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block",
+    }}
+  />
+
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+     background:
+  "linear-gradient(135deg, rgba(7,178,75,0.18) 0%, rgba(21,150,212,0.22) 55%, rgba(255,255,255,0.10) 100%)",
+      pointerEvents: "none",
+    }}
+  />
+</div>
           ))}
         </div>
 

@@ -9,6 +9,7 @@ export type NewsItem = {
   fullContent: string[];
 };
 
+
 export const newsItems: NewsItem[] = [
   {
     id: 1,

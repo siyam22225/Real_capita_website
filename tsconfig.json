@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    
     "target": "ES2017",
     "lib": [
       "dom",
@@ -28,6 +29,7 @@
         "name": "next"
       }
     ]
+    
   },
   "include": [
     "next-env.d.ts",
