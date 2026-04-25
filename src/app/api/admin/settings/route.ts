@@ -12,13 +12,19 @@ async function getCurrentAdmin() {
 
   try {
     const payload = await verifyAdminToken(token);
+
+    const id = typeof payload.id === "string" ? payload.id : "";
     const email = typeof payload.email === "string" ? payload.email : "";
 
-    if (!email) return null;
+    const admin = id
+      ? await prisma.adminUser.findUnique({ where: { id } })
+      : email
+        ? await prisma.adminUser.findUnique({
+            where: { email: email.toLowerCase() },
+          })
+        : null;
 
-    const admin = await prisma.adminUser.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+    if (!admin || !admin.isActive) return null;
 
     return admin;
   } catch {
@@ -40,7 +46,12 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       admin: {
+        id: admin.id,
         email: admin.email,
+        name: admin.name,
+        role: admin.role,
+        isProtected: admin.isProtected,
+        isActive: admin.isActive,
         updatedAt: admin.updatedAt,
       },
     });
@@ -78,6 +89,13 @@ export async function PATCH(req: Request) {
       );
     }
 
+    if (!newEmail) {
+      return NextResponse.json(
+        { success: false, message: "Email is required" },
+        { status: 400 }
+      );
+    }
+
     const passwordOk = await bcrypt.compare(currentPassword, admin.password);
 
     if (!passwordOk) {
@@ -92,31 +110,42 @@ export async function PATCH(req: Request) {
       password?: string;
     } = {};
 
-    if (newEmail && newEmail !== admin.email) {
+    if (newEmail !== admin.email) {
       const existingAdmin = await prisma.adminUser.findUnique({
         where: { email: newEmail },
+        select: { id: true, email: true },
       });
 
-     if (existingAdmin && existingAdmin.id !== admin.id) {
-  await prisma.adminUser.delete({
-    where: { id: existingAdmin.id },
-  });
-}
+      if (existingAdmin && existingAdmin.id !== admin.id) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "This email is already used by another admin account.",
+          },
+          { status: 409 }
+        );
+      }
 
-updateData.email = newEmail;
+      updateData.email = newEmail;
     }
 
     if (newPassword || confirmPassword) {
       if (newPassword.length < 8) {
         return NextResponse.json(
-          { success: false, message: "New password must be at least 8 characters" },
+          {
+            success: false,
+            message: "New password must be at least 8 characters",
+          },
           { status: 400 }
         );
       }
 
       if (newPassword !== confirmPassword) {
         return NextResponse.json(
-          { success: false, message: "New password and confirmation do not match" },
+          {
+            success: false,
+            message: "New password and confirmation do not match",
+          },
           { status: 400 }
         );
       }
@@ -136,13 +165,22 @@ updateData.email = newEmail;
       data: updateData,
     });
 
-    const token = await createAdminToken({ email: updatedAdmin.email });
+    const token = await createAdminToken({
+      id: updatedAdmin.id,
+      email: updatedAdmin.email,
+      role: updatedAdmin.role === "super_admin" ? "super_admin" : "admin",
+    });
 
     const res = NextResponse.json({
       success: true,
       message: "Admin settings updated successfully",
       admin: {
+        id: updatedAdmin.id,
         email: updatedAdmin.email,
+        name: updatedAdmin.name,
+        role: updatedAdmin.role,
+        isProtected: updatedAdmin.isProtected,
+        isActive: updatedAdmin.isActive,
         updatedAt: updatedAdmin.updatedAt,
       },
     });

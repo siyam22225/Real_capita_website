@@ -8,6 +8,13 @@ const settingsItems = [
     status: "Available",
   },
   {
+  title: "Admin User Management",
+  description:
+    "View, create, disable, and delete normal admin accounts. Super admin accounts are protected.",
+  href: "/admin/settings/admin-users",
+  status: "Available",
+},
+  {
     title: "Website Settings",
     description: "Future option for website name, contact info, and general settings.",
     href: "#",

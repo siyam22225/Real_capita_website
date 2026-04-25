@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       where: { email },
     });
 
-    if (!admin) {
+    if (!admin || !admin.isActive) {
       return NextResponse.json(
         { success: false, message: "Invalid credentials" },
         { status: 401 }
@@ -36,10 +36,23 @@ export async function POST(req: Request) {
       );
     }
 
-    const token = await createAdminToken({ email: admin.email });
+    const token = await createAdminToken({
+      id: admin.id,
+      email: admin.email,
+      role: admin.role === "super_admin" ? "super_admin" : "admin",
+    });
 
     const res = NextResponse.json(
-      { success: true, message: "Login successful" },
+      {
+        success: true,
+        message: "Login successful",
+        admin: {
+          id: admin.id,
+          email: admin.email,
+          name: admin.name,
+          role: admin.role,
+        },
+      },
       { status: 200 }
     );
 
