@@ -134,7 +134,7 @@ export default async function EnterpriseDetailsPage({ params }: Props) {
       <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "0 24px" }}>
         <div style={{ marginBottom: "24px" }}>
           <Link
-            href="/"
+           href="/enterprise"
             style={{
               display: "inline-flex",
               color: "#15803d",
@@ -144,7 +144,7 @@ export default async function EnterpriseDetailsPage({ params }: Props) {
               letterSpacing: "0.01em",
             }}
           >
-            ← Back to Home
+            ← Back to Concern
           </Link>
         </div>
 

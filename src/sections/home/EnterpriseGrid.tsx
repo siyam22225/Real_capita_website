@@ -38,6 +38,7 @@ async function getEnterpriseGridItems(): Promise<EnterpriseCardItem[]> {
         buttonHref: true,
         sortOrder: true,
       },
+        take: 6,
     });
 
     if (items.length > 0) {
