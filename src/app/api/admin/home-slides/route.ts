@@ -17,11 +17,16 @@ async function requireAdmin() {
   }
 }
 
+function cleanOptional(value: unknown) {
+  const text = String(value || "").trim();
+  return text.length > 0 ? text : null;
+}
+
 const slideSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional().nullable(),
   subtitle: z.string().optional().nullable(),
-  imageUrl: z.string().min(3),
+  imageUrl: z.string().trim().min(3, "Image URL is required"),
   buttonText: z.string().optional().nullable(),
   buttonHref: z.string().optional().nullable(),
   sortOrder: z.number().int().optional(),
@@ -84,32 +89,42 @@ export async function PATCH(req: Request) {
     const updatedSlides = [];
 
     for (const item of parsed.data.slides) {
+      const title = cleanOptional(item.title);
+      const subtitle = cleanOptional(item.subtitle);
+      const buttonText = cleanOptional(item.buttonText);
+      const buttonHref = cleanOptional(item.buttonHref);
+
+      if ((buttonText && !buttonHref) || (!buttonText && buttonHref)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Button Text and Button Link must be filled together, or both left empty.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const data = {
+        title,
+        subtitle,
+        imageUrl: item.imageUrl.trim(),
+        buttonText,
+        buttonHref,
+        sortOrder: item.sortOrder ?? 0,
+        isActive: item.isActive ?? true,
+      };
+
       if (item.id) {
         const updated = await prisma.homeSlide.update({
           where: { id: item.id },
-          data: {
-            title: item.title || null,
-            subtitle: item.subtitle || null,
-            imageUrl: item.imageUrl,
-            buttonText: item.buttonText || null,
-            buttonHref: item.buttonHref || null,
-            sortOrder: item.sortOrder ?? 0,
-            isActive: item.isActive ?? true,
-          },
+          data,
         });
 
         updatedSlides.push(updated);
       } else {
         const created = await prisma.homeSlide.create({
-          data: {
-            title: item.title || null,
-            subtitle: item.subtitle || null,
-            imageUrl: item.imageUrl,
-            buttonText: item.buttonText || null,
-            buttonHref: item.buttonHref || null,
-            sortOrder: item.sortOrder ?? 0,
-            isActive: item.isActive ?? true,
-          },
+          data,
         });
 
         updatedSlides.push(created);
@@ -129,6 +144,7 @@ export async function PATCH(req: Request) {
     );
   }
 }
+
 export async function DELETE(req: Request) {
   try {
     const admin = await requireAdmin();
@@ -141,7 +157,7 @@ export async function DELETE(req: Request) {
     }
 
     const body = await req.json();
-    const id = String(body.id || "");
+    const id = String(body.id || "").trim();
 
     if (!id) {
       return NextResponse.json(
