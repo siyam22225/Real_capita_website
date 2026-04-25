@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ContactMap from "@/sections/home/ContactMap";
 
@@ -18,6 +18,14 @@ function buildPropertyMessage(propertyName: string) {
 }
 
 export default function ContactPage() {
+  return (
+    <Suspense fallback={null}>
+      <ContactPageContent />
+    </Suspense>
+  );
+}
+
+function ContactPageContent() {
   const searchParams = useSearchParams();
   const selectedProperty = searchParams.get("property") ?? "";
 
@@ -217,94 +225,96 @@ export default function ContactPage() {
           font-weight: 800;
         }
 
-      .message-card {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.14);
-  border: 1px solid rgba(37, 99, 235, 0.10);
-  margin-bottom: 34px;
-}
-     .message-card-header {
-  padding: 24px 32px;
-  background:
-    linear-gradient(135deg, #0f9f6e 0%, #2387e8 100%);
-  position: relative;
-}
+        .message-card {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.98);
+          border-radius: 30px;
+          overflow: hidden;
+          box-shadow: 0 26px 70px rgba(15, 23, 42, 0.14);
+          border: 1px solid rgba(37, 99, 235, 0.10);
+          margin-bottom: 34px;
+        }
+
+        .message-card-header {
+          padding: 24px 32px;
+          background: linear-gradient(135deg, #0f9f6e 0%, #2387e8 100%);
+          position: relative;
+        }
 
         .message-card-header h2 {
-  margin: 0;
-  color: #ffffff;
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
+          margin: 0;
+          color: #ffffff;
+          font-size: 26px;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+        }
 
-.message-card-body {
-  padding: 34px;
-  background:
-    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 36%),
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-}
+        .message-card-body {
+          padding: 34px;
+          background:
+            radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 36%),
+            linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        }
 
-.contact-form {
-  display: grid;
-  gap: 20px;
-}
+        .contact-form {
+          display: grid;
+          gap: 20px;
+        }
 
-.two-col {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
+        .two-col {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 20px;
+        }
 
-     label {
-  display: block;
-  margin-bottom: 9px;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 900;
-}
+        label {
+          display: block;
+          margin-bottom: 9px;
+          color: #0f172a;
+          font-size: 14px;
+          font-weight: 900;
+        }
 
-input,
-select,
-textarea {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 16px;
-  padding: 15px 17px;
-  background: #f8fafc;
-  color: #0f172a;
-  font-size: 15px;
-  outline: none;
-  transition: all 0.2s ease;
-}
+        input,
+        select,
+        textarea {
+          width: 100%;
+          border: 1px solid rgba(15, 23, 42, 0.12);
+          border-radius: 16px;
+          padding: 15px 17px;
+          background: #f8fafc;
+          color: #0f172a;
+          font-size: 15px;
+          outline: none;
+          transition: all 0.2s ease;
+        }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #2387e8;
-  background: #ffffff;
-  box-shadow: 0 0 0 5px rgba(35, 135, 232, 0.12);
-}
-     textarea {
-  min-height: 170px;
-  resize: vertical;
-}
+        input:focus,
+        select:focus,
+        textarea:focus {
+          border-color: #2387e8;
+          background: #ffffff;
+          box-shadow: 0 0 0 5px rgba(35, 135, 232, 0.12);
+        }
 
-button {
-  width: fit-content;
-  border: none;
-  border-radius: 16px;
-  padding: 15px 34px;
-  background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
-}
+        textarea {
+          min-height: 170px;
+          resize: vertical;
+        }
+
+        button {
+          width: fit-content;
+          border: none;
+          border-radius: 16px;
+          padding: 15px 34px;
+          background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 900;
+          cursor: pointer;
+          box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+        }
+
         button:disabled {
           opacity: 0.7;
           cursor: not-allowed;
