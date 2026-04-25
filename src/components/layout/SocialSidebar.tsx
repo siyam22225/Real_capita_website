@@ -37,19 +37,6 @@ function getPlatform(label: string) {
   return "default";
 }
 
-function getIcon(platform: string, label: string) {
-  if (platform === "facebook") return "f";
-  if (platform === "instagram") return "◎";
-  if (platform === "youtube") return "▶";
-  if (platform === "linkedin") return "in";
-  if (platform === "whatsapp") return "☎";
-  if (platform === "messenger") return "⌁";
-  if (platform === "phone") return "☎";
-  if (platform === "x") return "𝕏";
-
-  return label.slice(0, 1).toUpperCase();
-}
-
 export default function SocialSidebar() {
   const [links, setLinks] = useState<SocialLink[]>([]);
 
@@ -58,10 +45,7 @@ export default function SocialSidebar() {
 
     async function loadLinks() {
       try {
-        const res = await fetch("/api/social-links", {
-          cache: "no-store",
-        });
-
+        const res = await fetch("/api/social-links", { cache: "no-store" });
         const json = await res.json();
 
         const data = Array.isArray(json?.data)
@@ -91,7 +75,7 @@ export default function SocialSidebar() {
     };
   }, []);
 
-  if (links.length === 0) return null;
+  if (!links.length) return null;
 
   return (
     <div className="socialDock" aria-label="Social links">
@@ -110,7 +94,15 @@ export default function SocialSidebar() {
             aria-label={label}
             title={label}
           >
-            <span>{getIcon(platform, label)}</span>
+            {platform === "facebook" && <span className="fbIcon">f</span>}
+            {platform === "instagram" && <span className="instaIcon" />}
+            {platform === "youtube" && <span className="youtubeIcon" />}
+            {platform === "linkedin" && <span className="linkedinIcon">in</span>}
+            {platform === "whatsapp" && <span className="phoneIcon">☎</span>}
+            {platform === "messenger" && <span className="messengerIcon">↯</span>}
+            {platform === "phone" && <span className="phoneIcon">☎</span>}
+            {platform === "x" && <span className="xIcon">𝕏</span>}
+            {platform === "default" && <span className="defaultIcon">•</span>}
           </a>
         );
       })}
@@ -118,131 +110,200 @@ export default function SocialSidebar() {
       <style>{`
         .socialDock {
           position: fixed;
-          right: 22px;
-          bottom: 96px;
+          right: 18px;
+          bottom: 28px;
           z-index: 999;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 12px;
           align-items: center;
         }
 
         .socialBubble {
-          width: 52px;
-          height: 52px;
+          width: 54px;
+          height: 54px;
           border-radius: 999px;
-          display: inline-flex;
+          display: flex;
           align-items: center;
           justify-content: center;
           text-decoration: none;
-          color: #ffffff;
-          background: #111827;
-          border: 4px solid rgba(255, 255, 255, 0.92);
-          box-shadow:
-            0 14px 30px rgba(15, 23, 42, 0.22),
-            inset 0 1px 0 rgba(255, 255, 255, 0.20);
+          border: 3px solid rgba(255, 255, 255, 0.96);
+          box-shadow: 0 14px 26px rgba(15, 23, 42, 0.24);
           transition:
             transform 0.24s ease,
             box-shadow 0.24s ease,
-            filter 0.24s ease,
-            background 0.24s ease;
-        }
-
-        .socialBubble span {
-          font-size: 22px;
-          font-weight: 900;
-          line-height: 1;
-          transform: translateY(-1px);
+            background 0.24s ease,
+            filter 0.24s ease;
         }
 
         .socialBubble:hover {
-          transform: translateY(-6px) scale(1.08);
+          transform: translateY(-5px) scale(1.08);
           box-shadow:
-            0 22px 44px rgba(15, 23, 42, 0.32),
-            0 0 0 7px rgba(255, 255, 255, 0.20);
-          filter: saturate(1.18);
+            0 20px 38px rgba(15, 23, 42, 0.32),
+            0 0 0 4px rgba(255, 255, 255, 0.24);
+          filter: brightness(1.08) saturate(1.15);
         }
 
         .social-facebook {
-          background: linear-gradient(135deg, #1877f2 0%, #0f4fb8 100%);
+          background: #100f0f;
+        }
+
+        .social-facebook:hover {
+        background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
         }
 
         .social-instagram {
-          background: linear-gradient(135deg, #f58529 0%, #dd2a7b 45%, #515bd4 100%);
+       background: #111010;
+        }
+
+        .social-instagram:hover {
+           background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
         }
 
         .social-youtube {
-          background: linear-gradient(135deg, #ff0000 0%, #b91c1c 100%);
+          background: #131212;
+        }
+
+        .social-youtube:hover {
+          background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
         }
 
         .social-linkedin {
-          background: linear-gradient(135deg, #0a66c2 0%, #084c91 100%);
+          background: #0c0d0d;
+        }
+
+        .social-linkedin:hover {
+          background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
         }
 
         .social-whatsapp {
-          background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+          background: #25d366;
+        }
+
+        .social-whatsapp:hover {
+          background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
         }
 
         .social-messenger {
           background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
         }
 
-        .social-phone {
-          background: linear-gradient(135deg, #111827 0%, #020617 100%);
-          border-color: rgba(239, 68, 68, 0.92);
-        }
-
-        .social-x {
-          background: linear-gradient(135deg, #111827 0%, #000000 100%);
-        }
-
-        .social-default {
-          background: linear-gradient(135deg, #16a34a 0%, #2563eb 100%);
-        }
-
-        .social-facebook:hover {
-          background: linear-gradient(135deg, #0f4fb8 0%, #38bdf8 100%);
-        }
-
-        .social-instagram:hover {
-          background: linear-gradient(135deg, #f97316 0%, #ec4899 45%, #6366f1 100%);
-        }
-
-        .social-youtube:hover {
-          background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
-        }
-
-        .social-linkedin:hover {
-          background: linear-gradient(135deg, #075985 0%, #38bdf8 100%);
-        }
-
-        .social-whatsapp:hover {
-          background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
-        }
-
         .social-messenger:hover {
-          background: linear-gradient(135deg, #2563eb 0%, #ec4899 100%);
+          background: linear-gradient(135deg, #2563eb 0%, #f43f5e 100%);
+        }
+
+        .social-phone {
+          background: #111827;
         }
 
         .social-phone:hover {
           background: linear-gradient(135deg, #020617 0%, #dc2626 100%);
         }
 
+        .social-x {
+          background: #000000;
+        }
+
+        .social-x:hover {
+          background: linear-gradient(135deg, #111827 0%, #f8fafc 100%);
+        }
+
+        .social-default {
+          background: #334155;
+        }
+
+        .social-default:hover {
+          background: linear-gradient(135deg, #16a34a 0%, #2563eb 100%);
+        }
+
+        .fbIcon {
+          color: #ffffff;
+          font-size: 31px;
+          font-weight: 900;
+          font-family: Arial, sans-serif;
+          line-height: 1;
+          transform: translateY(2px);
+        }
+
+        .instaIcon {
+          width: 25px;
+          height: 25px;
+          border: 3px solid #ffffff;
+          border-radius: 8px;
+          position: relative;
+          display: block;
+        }
+
+        .instaIcon::before {
+          content: "";
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border: 3px solid #ffffff;
+          border-radius: 999px;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .instaIcon::after {
+          content: "";
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background: #ffffff;
+          border-radius: 999px;
+          right: 3px;
+          top: 3px;
+        }
+
+        .youtubeIcon {
+          width: 0;
+          height: 0;
+          border-top: 10px solid transparent;
+          border-bottom: 10px solid transparent;
+          border-left: 17px solid #ffffff;
+          margin-left: 4px;
+        }
+
+        .linkedinIcon,
+        .xIcon,
+        .phoneIcon,
+        .messengerIcon,
+        .defaultIcon {
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: 900;
+          font-family: Arial, sans-serif;
+          line-height: 1;
+        }
+
         @media (max-width: 768px) {
           .socialDock {
-            right: 14px;
-            bottom: 78px;
+            right: 12px;
+            bottom: 20px;
             gap: 10px;
           }
 
           .socialBubble {
-            width: 44px;
-            height: 44px;
-            border-width: 3px;
+            width: 48px;
+            height: 48px;
+            border-width: 2.5px;
           }
 
-          .socialBubble span {
-            font-size: 18px;
+          .fbIcon {
+            font-size: 28px;
+          }
+
+          .instaIcon {
+            width: 22px;
+            height: 22px;
+          }
+
+          .youtubeIcon {
+            border-top-width: 8px;
+            border-bottom-width: 8px;
+            border-left-width: 15px;
           }
         }
       `}</style>
