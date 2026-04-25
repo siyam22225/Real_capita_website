@@ -553,15 +553,13 @@ body {
 }
 
 .header {
-  background: rgba(24, 24, 24, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .header-inner {
-  min-height: 72px;
+  min-height: 92px;
 }
 
 .section-card {
@@ -577,7 +575,7 @@ body {
   border-radius: 20px;
 }
 .header .nav-link {
-  color: #ffffff !important;
+  color: #111111 !important;
   font-weight: 500;
 }
 
@@ -652,16 +650,56 @@ body {
   padding: clamp(40px, 6vw, 80px) 0;
 }
 .mobile-menu-toggle {
+  width: 62px;
+  height: 50px;
   display: none;
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 34px;
-  line-height: 1;
-  cursor: pointer;
+  align-items: center;
+  justify-content: center;
   padding: 0;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+.mobile-menu-toggle:hover {
+  background: #f8fafc;
+  border-color: rgba(17, 17, 17, 0.18);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.mobile-menu-dot-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(7, 178, 75, 0.10);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  padding: 7px;
+  box-sizing: border-box;
+  place-items: center;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.mobile-menu-dot-badge span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #07b24b;
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .mobile-menu-toggle {
+    display: inline-flex;
+  }
+}
 .mobile-menu-overlay {
   position: fixed;
   inset: 0;
@@ -812,7 +850,7 @@ body {
   transition: color 0.2s ease, transform 0.2s ease;
 }
 .desktop-contact-link {
-  color: #ffffff !important;
+  color: "#111111" !important;
   font-weight: 600;
   text-decoration: none;
   display: inline-block;
@@ -912,4 +950,18 @@ body {
   .board-content-featured {
     padding: 18px;
   }
+}
+.header .header-inner {
+  min-height: 80px !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.dropdown-sub-link {
+  transition: all 0.2s ease;
+}
+
+.dropdown-sub-link:hover {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.03) 100%) !important;
+  color: #2563eb !important;
+  padding-left: 22px !important;
 }

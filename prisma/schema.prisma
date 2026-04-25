@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
 model News {
   id          String   @id @default(cuid())
   title       String
@@ -27,20 +28,31 @@ model Photo {
 }
 
 model Video {
-  id        String   @id @default(cuid())
-  title     String
-  videoUrl  String
-  thumbnail String?
-  category  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  title      String
+  videoUrl   String?
+  youtubeUrl String?
+  thumbnail  String?
+  category   String?
+  sourceType String   @default("youtube") // youtube | raw
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
+
 model Enterprise {
   id          String   @id @default(cuid())
   name        String
   slug        String   @unique
   description String
   imageUrl    String?
+
+  location    String?
+  buttonText  String?
+  buttonHref  String?
+  profileUrl  String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -55,10 +67,47 @@ model ContactMessage {
   message   String
   createdAt DateTime @default(now())
 }
+
 model AdminUser {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  href      String
+  iconUrl   String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model HomeSlide {
+  id          String   @id @default(cuid())
+  title       String?
+  subtitle    String?
+  imageUrl    String
+  buttonText  String?
+  buttonHref  String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model OfficeSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  address   String
+  phone     String
+  email     String
+  mapUrl    String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

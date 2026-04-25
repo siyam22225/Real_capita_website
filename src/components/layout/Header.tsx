@@ -3,9 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { enterpriseItems } from "@/data/enterprises";
+type HeaderEnterpriseItem = {
+  id: string | number;
+  slug: string;
+  name: string;
+  sortOrder?: number;
+};
 
 export default function Header() {
   const pathname = usePathname();
@@ -24,6 +29,57 @@ const [mobileMessageOpen, setMobileMessageOpen] = useState(false);
 const [mobileEnterpriseOpen, setMobileEnterpriseOpen] = useState(false);
 const [mobileMediaOpen, setMobileMediaOpen] = useState(false);
 const [contactHovered, setContactHovered] = useState(false);
+const [headerEnterpriseItems, setHeaderEnterpriseItems] = useState<
+  HeaderEnterpriseItem[]
+>(
+  enterpriseItems.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+  }))
+);
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadEnterpriseMenu() {
+    try {
+      const res = await fetch("/api/enterprises", {
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success || !Array.isArray(data.data)) {
+        return;
+      }
+
+      const items = data.data
+        .filter((item: HeaderEnterpriseItem) => item.slug && item.name)
+        .sort(
+          (a: HeaderEnterpriseItem, b: HeaderEnterpriseItem) =>
+            (a.sortOrder || 0) - (b.sortOrder || 0)
+        )
+        .map((item: HeaderEnterpriseItem) => ({
+          id: item.id,
+          slug: item.slug,
+          name: item.name,
+          sortOrder: item.sortOrder || 0,
+        }));
+
+      if (isMounted && items.length > 0) {
+        setHeaderEnterpriseItems(items);
+      }
+    } catch {
+      // Keep static fallback if API fails.
+    }
+  }
+
+  loadEnterpriseMenu();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
 
   const openAboutMenu = () => {
     if (aboutMenuTimeout.current) clearTimeout(aboutMenuTimeout.current);
@@ -69,44 +125,52 @@ const [contactHovered, setContactHovered] = useState(false);
     }, 250);
   };
 
- const menuButtonStyle = {
+const menuButtonStyle = {
   background: "none",
   border: "none",
   cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: 600,
-  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: 800,
+  color: "#111111",
   display: "flex" as const,
   alignItems: "center" as const,
-  gap: "4px",
+  gap: "5px",
   padding: "6px 0",
   height: "100%",
+  letterSpacing: "0.045em",
+  textTransform: "uppercase" as const,
+  fontFamily: "Arial, Helvetica, sans-serif",
   transition: "color 0.2s ease, transform 0.2s ease",
 };
 
-  const compactDropdownStyle = {
-    position: "absolute" as const,
-    top: "calc(100% - 2px)",
-    left: 0,
-    background: "#2f2f2f",
-    boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
-    border: "1px solid rgba(255,255,255,0.06)",
-    zIndex: 100,
-    padding: "4px 0",
-    borderRadius: "0 0 8px 8px",
-    overflow: "hidden" as const,
-  };
+ const compactDropdownStyle = {
+  position: "absolute" as const,
+  top: "calc(100% + 10px)",
+  left: 0,
+  right: "auto",
+  minWidth: "220px",
+  background: "#ffffff",
+  border: "1px solid rgba(15, 23, 42, 0.08)",
+  borderRadius: "16px",
+  boxShadow: "0 18px 40px rgba(15, 23, 42, 0.12)",
+  padding: "8px 0",
+  zIndex: 1000,
+  overflow: "hidden",
+};
 
-  const compactLinkStyle = {
-    display: "block",
-    padding: "10px 14px",
-    textDecoration: "none",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: 400,
-    background: "transparent",
-    transition: "all 0.2s ease",
-  };
+ const compactLinkStyle = {
+  display: "block",
+  padding: "12px 18px",
+  color: "#111111",
+  textDecoration: "none",
+  fontSize: "13px",
+  fontWeight: 750,
+  letterSpacing: "0.025em",
+  textTransform: "capitalize" as const,
+  fontFamily: "Arial, Helvetica, sans-serif",
+  background: "#ffffff",
+  transition: "all 0.2s ease",
+};
 
   return (
     <header className="header">
@@ -139,14 +203,24 @@ const [contactHovered, setContactHovered] = useState(false);
           </div>
         </Link>
 
-        <button
-          type="button"
-          className="mobile-menu-toggle"
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
+ <button
+  type="button"
+  className="mobile-menu-toggle"
+  onClick={() => setMobileMenuOpen(true)}
+  aria-label="Open menu"
+>
+  <span className="mobile-menu-dot-badge" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+</button>
 
         <nav
           className="nav desktop-nav"
@@ -169,7 +243,7 @@ const [contactHovered, setContactHovered] = useState(false);
   className="desktop-menu-btn"
   style={{
     ...menuButtonStyle,
-    color: showAboutMenu ? "#3aa0ff" : "#ffffff",
+    color: showAboutMenu ? "#3aa0ff" : "#111111",
   }}
 >
   About Us ▼
@@ -184,6 +258,7 @@ const [contactHovered, setContactHovered] = useState(false);
                 <Link
                   href="/about/corporate-profile"
                   onClick={() => setShowAboutMenu(false)}
+                  className="dropdown-sub-link"
                   style={{
                     ...compactLinkStyle,
                     borderBottom: "1px solid rgba(255,255,255,0.08)",
@@ -194,6 +269,7 @@ const [contactHovered, setContactHovered] = useState(false);
                 <Link
                   href="/about/mission-vision-values"
                   onClick={() => setShowAboutMenu(false)}
+                  className="dropdown-sub-link"
                   style={compactLinkStyle}
                 >
                   Mission Vision &amp; Values
@@ -213,7 +289,7 @@ const [contactHovered, setContactHovered] = useState(false);
   className="desktop-menu-btn"
   style={{
     ...menuButtonStyle,
-    color: showMessageMenu ? "#3aa0ff" : "#ffffff",
+   color: showMediaMenu ? "#3aa0ff" : "#111111",
   }}
 >
   Message ▼
@@ -228,6 +304,7 @@ const [contactHovered, setContactHovered] = useState(false);
                 <Link
                   href="/message/former-chairman"
                   onClick={() => setShowMessageMenu(false)}
+                  className="dropdown-sub-link"
                   style={{
                     ...compactLinkStyle,
                     borderBottom: "1px solid rgba(255,255,255,0.08)",
@@ -237,6 +314,7 @@ const [contactHovered, setContactHovered] = useState(false);
                 </Link>
                 <Link
                   href="/message/board-of-directors"
+                  className="dropdown-sub-link"
                   onClick={() => setShowMessageMenu(false)}
                   style={compactLinkStyle}
                 >
@@ -257,27 +335,28 @@ const [contactHovered, setContactHovered] = useState(false);
   className="desktop-menu-btn"
   style={{
     ...menuButtonStyle,
-    color: showEnterpriseMenu ? "#3aa0ff" : "#ffffff",
+    color: showEnterpriseMenu ? "#3aa0ff" : "#111111",
   }}
 >
-  Enterprise ▼
+ Our Concern ▼
 </button>
 
             {showEnterpriseMenu && (
               <div
                 onMouseEnter={openEnterpriseMenu}
                 onMouseLeave={closeEnterpriseMenu}
-                style={{ ...compactDropdownStyle, right: 0, left: "auto", width: "220px" }}
+              style={{ ...compactDropdownStyle, left: 0, right: "auto" }}
               >
-                {enterpriseItems.map((item, index) => (
+              {headerEnterpriseItems.map((item, index) => (
                   <Link
-                    key={item.id}
+                  key={item.slug}
                     href={`/enterprise/${item.slug}`}
+                    className="dropdown-sub-link"
                     onClick={() => setShowEnterpriseMenu(false)}
                     style={{
                       ...compactLinkStyle,
                       borderBottom:
-                        index !== enterpriseItems.length - 1
+                      index !== headerEnterpriseItems.length - 1
                           ? "1px solid rgba(255,255,255,0.08)"
                           : "none",
                     }}
@@ -288,6 +367,19 @@ const [contactHovered, setContactHovered] = useState(false);
               </div>
             )}
           </div>
+         <Link
+  href="/properties"
+  className="desktop-menu-btn"
+  style={{
+  fontSize: "13px",
+fontWeight: 800,
+letterSpacing: "0.045em",
+textTransform: "uppercase",
+fontFamily: "Arial, Helvetica, sans-serif",
+  }}
+>
+  Properties
+</Link>
 
           <div
             style={{ position: "relative", display: "flex", alignItems: "center" }}
@@ -300,7 +392,7 @@ const [contactHovered, setContactHovered] = useState(false);
   className="desktop-menu-btn"
   style={{
     ...menuButtonStyle,
-    color: showMediaMenu ? "#3aa0ff" : "#ffffff",
+    color: showMediaMenu ? "#3aa0ff" : "#111111",
   }}
 >
   Media ▼
@@ -320,6 +412,7 @@ const [contactHovered, setContactHovered] = useState(false);
                   <Link
                     key={item.label}
                     href={item.href}
+                    className="dropdown-sub-link"
                     onClick={() => setShowMediaMenu(false)}
                     style={{
                       ...compactLinkStyle,
@@ -336,7 +429,17 @@ const [contactHovered, setContactHovered] = useState(false);
             )}
           </div>
 
- <Link href="/contact" className="desktop-contact-link">
+ <Link
+  href="/contact"
+  className="desktop-contact-link"
+  style={{
+   fontSize: "13px",
+fontWeight: 800,
+letterSpacing: "0.045em",
+textTransform: "uppercase",
+fontFamily: "Arial, Helvetica, sans-serif",
+  }}
+>
   Contact
 </Link>
         </nav>
@@ -413,14 +516,14 @@ const [contactHovered, setContactHovered] = useState(false);
           className={`mobile-submenu-toggle ${mobileEnterpriseOpen ? "active" : ""}`}
           onClick={() => setMobileEnterpriseOpen((prev) => !prev)}
         >
-          <span>Enterprise</span>
+          <span>Our Concern </span>
           <span>▼</span>
         </button>
         {mobileEnterpriseOpen && (
           <div className="mobile-submenu">
-            {enterpriseItems.map((item) => (
+        {headerEnterpriseItems.map((item) => (
               <Link
-                key={item.id}
+              key={item.slug}
                 href={`/enterprise/${item.slug}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -451,10 +554,14 @@ const [contactHovered, setContactHovered] = useState(false);
             </Link>
           </div>
         )}
+        <Link href="/properties" onClick={() => setMobileMenuOpen(false)}>
+  Properties
+</Link>
 
         <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
           Contact
         </Link>
+        
       </div>
     </div>
   </div>

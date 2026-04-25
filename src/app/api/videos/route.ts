@@ -1,84 +1,58 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
-const videoSchema = z.object({
-  title: z.string().min(2),
-  youtubeUrl: z.string().url(),
-  category: z.string().optional(),
-});
-
-function extractYouTubeId(url: string) {
+export async function GET() {
   try {
-    const parsed = new URL(url);
+    const videos = await prisma.video.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-    if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.slice(1);
-    }
-
-    if (parsed.hostname.includes("youtube.com")) {
-      const v = parsed.searchParams.get("v");
-      if (v) return v;
-
-      const parts = parsed.pathname.split("/");
-      const embedIndex = parts.findIndex((part) => part === "embed");
-      if (embedIndex !== -1 && parts[embedIndex + 1]) {
-        return parts[embedIndex + 1];
-      }
-
-      const shortsIndex = parts.findIndex((part) => part === "shorts");
-      if (shortsIndex !== -1 && parts[shortsIndex + 1]) {
-        return parts[shortsIndex + 1];
-      }
-    }
-
-    return null;
-  } catch {
-    return null;
+    return NextResponse.json(videos);
+  } catch (error) {
+    console.error("GET /api/videos error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch videos." },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const parsed = videoSchema.safeParse(body);
 
-    if (!parsed.success) {
+    const { title, category, sourceType, videoUrl } = body;
+
+    if (!title || !videoUrl || !sourceType) {
       return NextResponse.json(
-        { success: false, message: "Invalid video data" },
+        { error: "Title, sourceType, and videoUrl are required." },
         { status: 400 }
       );
     }
 
-    const videoId = extractYouTubeId(parsed.data.youtubeUrl);
-
-    if (!videoId) {
+    if (sourceType !== "youtube" && sourceType !== "raw") {
       return NextResponse.json(
-        { success: false, message: "Invalid YouTube URL" },
+        { error: "sourceType must be either youtube or raw." },
         { status: 400 }
       );
     }
 
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-
-    const saved = await prisma.video.create({
+    const newVideo = await prisma.video.create({
       data: {
-        title: parsed.data.title,
-        videoUrl: embedUrl,
-        thumbnail: thumbnailUrl,
-        category: parsed.data.category || null,
+        title,
+        category: category || null,
+        sourceType,
+        videoUrl,
       },
     });
 
-    return NextResponse.json(
-      { success: true, message: "Video added successfully", data: saved },
-      { status: 201 }
-    );
+    return NextResponse.json(newVideo, { status: 201 });
   } catch (error) {
-    console.error("VIDEO_POST_ERROR", error);
+    console.error("POST /api/videos error:", error);
     return NextResponse.json(
-      { success: false, message: "Server error" },
+      { error: "Failed to create video." },
       { status: 500 }
     );
   }

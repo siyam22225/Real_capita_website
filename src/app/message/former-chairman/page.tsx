@@ -46,24 +46,24 @@ export default function FormerChairmanPage() {
 
             <div style={{ fontSize: "20px", lineHeight: "1.95", color: "rgba(255,255,255,0.92)" }}>
               <p>
-                Bangladesh has experienced strong economic growth accompanied by rapid
-                urbanization. With this growth, the demand for planned development and
-                sustainable living solutions has increased significantly.
+               Bangladesh has experienced high economic growth accompanied with rapid urbanization. We are always bettering ourselves in pursuit of long-term sustainable growth. Urban growth has resulted in a tremendous increase of energy consumption.
               </p>
               <p>
-                Real Capita Group has always worked to create long-term value through
-                organized planning, customer trust, and responsible development. Our
-                effort is to make modern living more practical, accessible, and dependable.
+               Dhaka Metropolitan city   has now turned into a densely populated, bustling city. Millions of people reside in Dhaka city, the capital of Bangladesh for service, business & other purposes. Unfortunately, the increase in housing does not correlate to the population growth.
               </p>
               <p>
-                We believe a successful real estate initiative must combine location
-                strength, proper planning, service excellence, and a future-ready vision.
-                That belief continues to guide our work and commitment.
+             It is possible to reduce the mounting pressure of our rapidly growing population in Dhaka city largely by developing the surrounding area of Dhaka city in a controlled, pre-planned manner & by establishing permanent residential accommodation for this vast population.
               </p>
               <p>
-                Real Capita Group is dedicated to building projects that create confidence,
-                improve lifestyle, and contribute to the next generation of growth.
+                Real estate developers & agents are there to make your dream come true, to take you towards your dreamland. With us, we ensure that one gets the luxury of living away from noise pollution & in close proximity of all sorts of amenities such as transportation, shopping malls, banks, gardens, meditation centers as well as educational institutions.   We have built a sustainable satellite township to give our stakeholders an eco-friendly living solution suited to your lifestyle. A part of delivering exceptional customer service is providing them with a knowledgeable, professional, qualified & experienced sales team to assist with all the aspects of the plot buying process.
               </p>
+              <p>
+                Our experienced consultants are specialized in marketing & managing Real Capita Group. Real Capita Group has been handpicked in order to give clients the best possible selection of property in “RC Maya Kanan” & “RC Rivery Village” to cater to all budget ranges & to ensure that we offer only the best.
+</p>
+<p> 
+  Real Capita Group: Create your own sunshine from generation to generation.
+</p>
+
             </div>
           </div>
 
@@ -109,7 +109,10 @@ export default function FormerChairmanPage() {
               <p><strong>Education:</strong> B.Com (Hons), Management</p>
               <p><strong>Profession:</strong> Businessman &amp; Contractor</p>
               <p><strong>Achievements:</strong> Recognized for leadership, dedication, and development vision.</p>
+              <p><strong>Business Activities:</strong> First Class Contractor in LGED & Roads & Highways department all over Dhaka City Corporation. (1981- 2006)</p>
               <p><strong>Legacy:</strong> A lasting contribution to structured growth and corporate trust.</p>
+              <p><strong>Personal Qualities:</strong> Known for integrity, vision, and commitment to excellence.</p>
+              <p><strong>Foreign Visit:</strong>  India & KSA</p>
             </div>
           </div>
         </div>

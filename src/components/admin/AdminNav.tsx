@@ -7,6 +7,7 @@ const links = [
   { label: "Messages", href: "/admin/messages" },
   { label: "Photos", href: "/admin/photos" },
   { label: "Videos", href: "/admin/videos" },
+  { label: "Settings", href: "/admin/settings" },
 ];
 
 export default function AdminNav() {
@@ -35,10 +36,13 @@ export default function AdminNav() {
               textDecoration: "none",
               padding: "10px 16px",
               borderRadius: "999px",
-              background: "#ffffff",
-              color: "#0f172a",
+              background: link.href === "/admin/settings" ? "#0f172a" : "#ffffff",
+              color: link.href === "/admin/settings" ? "#ffffff" : "#0f172a",
               fontWeight: 700,
-              border: "1px solid #e5e7eb",
+              border:
+                link.href === "/admin/settings"
+                  ? "1px solid #0f172a"
+                  : "1px solid #e5e7eb",
             }}
           >
             {link.label}

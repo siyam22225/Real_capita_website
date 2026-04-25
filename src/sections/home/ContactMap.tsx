@@ -1,211 +1,265 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
+type Office = {
+  id: string;
+  key: string;
+  name: string;
+  address: string;
+  color: string;
+  embedSrc: string;
+  sortOrder: number;
+};
+
+type OfficeApiItem = {
+  key: string;
+  title: string;
+  address: string;
+  phone: string;
+  email: string;
+  mapUrl?: string | null;
+  sortOrder?: number;
+};
+
+const fallbackOffices: Office[] = [
+  {
+    id: "corporate-office",
+    key: "corporate-office",
+    name: "Corporate Office",
+    address:
+      "House# 05, Flat# C-4 & C-5, Road# 21, Gulshan-1, Dhaka-1212, Bangladesh",
+    color: "#2f9e44",
+    embedSrc:
+      "https://maps.google.com/maps?q=Real%20Capita%20Group%20Gulshan%20Dhaka&z=16&output=embed",
+    sortOrder: 1,
+  },
+  {
+    id: "sales-office",
+    key: "sales-office",
+    name: "Sales Office",
+    address:
+      "Level-19, Nafi Tower, 53, Gulshan-Avenue, Gulshan-1, Dhaka-1212, Bangladesh",
+    color: "#3b82f6",
+    embedSrc:
+      "https://maps.google.com/maps?q=Nafi%20Tower%20Gulshan%201%20Dhaka&z=16&output=embed",
+    sortOrder: 2,
+  },
+];
+
+function getOfficeColor(key: string, index: number) {
+  if (key.includes("corporate")) return "#2f9e44";
+  if (key.includes("sales")) return "#3b82f6";
+  return index % 2 === 0 ? "#2f9e44" : "#3b82f6";
+}
+
+function getFallbackMap(key: string) {
+  if (key.includes("sales")) {
+    return "https://maps.google.com/maps?q=Nafi%20Tower%20Gulshan%201%20Dhaka&z=16&output=embed";
+  }
+
+  return "https://maps.google.com/maps?q=Real%20Capita%20Group%20Gulshan%20Dhaka&z=16&output=embed";
+}
+
+function getMapSrc(item: OfficeApiItem) {
+  const mapUrl = item.mapUrl?.trim();
+
+  if (
+    mapUrl &&
+    (mapUrl.includes("google.com/maps") || mapUrl.includes("maps.google.com"))
+  ) {
+    return mapUrl;
+  }
+
+  return getFallbackMap(item.key);
+}
+
 export default function ContactMap() {
+  const [offices, setOffices] = useState<Office[]>(fallbackOffices);
+  const [selectedOfficeId, setSelectedOfficeId] =
+    useState<string>("corporate-office");
+
+  useEffect(() => {
+    async function loadOffices() {
+      try {
+        const res = await fetch("/api/office-settings", {
+          cache: "no-store",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success || !Array.isArray(data.data)) {
+          return;
+        }
+
+        const dynamicOffices = data.data
+          .filter((item: OfficeApiItem) => item.key && item.title && item.address)
+          .sort(
+            (a: OfficeApiItem, b: OfficeApiItem) =>
+              (a.sortOrder || 0) - (b.sortOrder || 0)
+          )
+          .map((item: OfficeApiItem, index: number) => ({
+            id: item.key,
+            key: item.key,
+            name: item.title,
+            address: item.address,
+            color: getOfficeColor(item.key, index),
+            embedSrc: getMapSrc(item),
+            sortOrder: item.sortOrder || index + 1,
+          }));
+
+        if (dynamicOffices.length > 0) {
+          setOffices(dynamicOffices);
+          setSelectedOfficeId(dynamicOffices[0].id);
+        }
+      } catch {
+        setOffices(fallbackOffices);
+      }
+    }
+
+    loadOffices();
+  }, []);
+
+  const selectedOffice = useMemo(() => {
+    return offices.find((office) => office.id === selectedOfficeId) ?? offices[0];
+  }, [offices, selectedOfficeId]);
+
   return (
     <section
       style={{
-        padding: "44px 0 36px",
+        padding: "28px 0 48px",
         background: "transparent",
       }}
     >
-      <div
-        className="container"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1.15fr",
-          gap: "22px",
-          alignItems: "stretch",
-        }}
-      >
+      <div className="container">
         <div
           style={{
+            width: "100%",
             background: "rgba(255,255,255,0.92)",
-            borderRadius: "28px",
-            padding: "28px",
+            borderRadius: "24px",
+            border: "1px solid rgba(15,23,42,0.08)",
             boxShadow: "0 14px 34px rgba(15,23,42,0.08)",
-            border: "1px solid rgba(21,150,212,0.08)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "14px",
-            minHeight: "480px",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#16a34a",
-                fontSize: "14px",
-                fontWeight: 800,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-              }}
-            >
-              Here We Are
-            </p>
-
-            <h2
-              className="section-title"
-              style={{
-                margin: "0 0 10px 0",
-                color: "#0f172a",
-                fontWeight: 800,
-                lineHeight: 1.05,
-              }}
-            >
-              Contact Us
-              <br />
-              Today
-            </h2>
-
-            <p
-              style={{
-                margin: 0,
-                color: "#1d9bf0",
-                fontSize: "18px",
-                fontWeight: 700,
-              }}
-            >
-              Corporate &amp; Sales Office
-            </p>
-          </div>
-
-          <div
-            style={{
-              background: "#f8fafc",
-              border: "1px solid #e5e7eb",
-              borderRadius: "18px",
-              padding: "18px 18px 16px",
-            }}
-          >
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#0f172a",
-                fontSize: "16px",
-                fontWeight: 800,
-              }}
-            >
-              Corporate Office
-            </p>
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#475569",
-                fontSize: "16px",
-                lineHeight: 1.7,
-              }}
-            >
-              House# 05, Flat# C-4 &amp; C-5,
-              <br />
-              Road# 21, Gulshan-1, Dhaka-1212, Bangladesh
-            </p>
-            <p
-              style={{
-                margin: 0,
-                color: "#334155",
-                fontSize: "16px",
-                fontWeight: 700,
-              }}
-            >
-              Tel: +88-02-226600699
-            </p>
-          </div>
-
-          <div
-            style={{
-              background: "#f8fafc",
-              border: "1px solid #e5e7eb",
-              borderRadius: "18px",
-              padding: "18px 18px 16px",
-            }}
-          >
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#0f172a",
-                fontSize: "16px",
-                fontWeight: 800,
-              }}
-            >
-              Sales Office
-            </p>
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#475569",
-                fontSize: "16px",
-                lineHeight: 1.7,
-              }}
-            >
-              Level-19, Nafi Tower, 53, Gulshan-Avenue,
-              <br />
-              Gulshan-1, Dhaka-1212, Bangladesh
-            </p>
-            <p
-              style={{
-                margin: 0,
-                color: "#334155",
-                fontSize: "16px",
-                fontWeight: 700,
-              }}
-            >
-              Tel: +88-02-8833232
-            </p>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "rgba(255,255,255,0.92)",
-            borderRadius: "28px",
             overflow: "hidden",
-            boxShadow: "0 14px 34px rgba(15,23,42,0.08)",
-            border: "1px solid rgba(21,150,212,0.08)",
-            minHeight: "520px",
-            display: "flex",
-            flexDirection: "column",
           }}
         >
           <div
             style={{
-              padding: "18px 22px",
-              background: "linear-gradient(90deg, #0f9d7a 0%, #1d9bf0 100%)",
+              padding: "16px 20px 12px",
+              borderBottom: "1px solid rgba(15,23,42,0.08)",
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,250,252,0.96) 100%)",
             }}
           >
-            <h3
+            <h2
               style={{
                 margin: 0,
-                color: "#ffffff",
-                fontSize: "20px",
+                fontSize: "clamp(20px, 2vw, 30px)",
                 fontWeight: 800,
+                color: "#0f172a",
+                lineHeight: 1.15,
               }}
             >
-              Map Location
-            </h3>
+              Office Locations
+            </h2>
           </div>
 
-          <div style={{ flex: 1, minHeight: "458px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px",
+              padding: "16px 16px 14px",
+              background: "#f8fafc",
+            }}
+          >
+            {offices.map((office) => {
+              const isActive = selectedOfficeId === office.id;
+
+              return (
+                <button
+                  key={office.id}
+                  type="button"
+                  onClick={() => setSelectedOfficeId(office.id)}
+                  style={{
+                    textAlign: "left",
+                    padding: "18px 18px 16px",
+                    borderRadius: "18px",
+                    border: isActive
+                      ? `1.5px solid ${office.color}`
+                      : "1px solid rgba(15,23,42,0.10)",
+                    background: isActive
+                      ? "rgba(255,255,255,0.98)"
+                      : "rgba(255,255,255,0.94)",
+                    boxShadow: isActive
+                      ? "0 10px 24px rgba(15,23,42,0.10)"
+                      : "0 4px 14px rgba(15,23,42,0.05)",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "999px",
+                        background: office.color,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 800,
+                        color: "#111827",
+                      }}
+                    >
+                      {office.name}
+                    </span>
+                  </div>
+
+                  <p
+                    style={{
+                      margin: 0,
+                      color: "#334155",
+                      fontSize: "15px",
+                      lineHeight: 1.55,
+                    }}
+                  >
+                    {office.address}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              height: "clamp(260px, 34vw, 380px)",
+              background: "#e5e7eb",
+            }}
+          >
             <iframe
-              title="Real Capita Group Location"
-              src="https://www.google.com/maps?q=House%205%20Road%2021%20Gulshan%201%20Dhaka&z=16&output=embed"
+              key={selectedOffice.id}
+              src={selectedOffice.embedSrc}
               width="100%"
               height="100%"
               style={{ border: 0, display: "block" }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              title={`${selectedOffice.name} location map`}
             />
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (max-width: 1024px) {
-          .container {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

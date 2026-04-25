@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import ContactMap from "@/sections/home/ContactMap";
 
 type FormState = {
   name: string;
@@ -11,7 +13,14 @@ type FormState = {
   message: string;
 };
 
+function buildPropertyMessage(propertyName: string) {
+  return `Hello, I would like to know more about ${propertyName}. Please share pricing, availability, brochure, and visit details.`;
+}
+
 export default function ContactPage() {
+  const searchParams = useSearchParams();
+  const selectedProperty = searchParams.get("property") ?? "";
+
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -25,14 +34,22 @@ export default function ContactPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  useEffect(() => {
+    if (!selectedProperty) return;
+
+    setForm((prev) => ({
+      ...prev,
+      queryType: "Property Enquiry",
+      subject: prev.subject || `Enquiry about ${selectedProperty}`,
+      message: prev.message || buildPropertyMessage(selectedProperty),
+    }));
+  }, [selectedProperty]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,9 +61,7 @@ export default function ContactPage() {
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
@@ -61,435 +76,268 @@ export default function ContactPage() {
         name: "",
         email: "",
         phone: "",
-        queryType: "General Inquiry",
-        subject: "",
-        message: "",
+        queryType: selectedProperty ? "Property Enquiry" : "General Inquiry",
+        subject: selectedProperty ? `Enquiry about ${selectedProperty}` : "",
+        message: selectedProperty ? buildPropertyMessage(selectedProperty) : "",
       });
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
+      setErrorMessage(error instanceof Error ? error.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section
-      style={{
-        padding: "56px 0 70px",
-        background: "transparent",
-      }}
-    >
-      <div className="container" style={{ maxWidth: "1180px" }}>
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "30px",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 10px 0",
-              color: "#16a34a",
-              fontSize: "14px",
-              fontWeight: 800,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-            }}
-          >
-            Get In Touch
+    <section className="contact-page">
+      <div className="contact-container">
+        <div className="contact-heading">
+          <p className="contact-badge">Get In Touch</p>
+          <h1>Contact Us</h1>
+          <p>
+            Send your message directly to our team. We will review your query and respond as soon as possible.
           </p>
 
-          <h1
-            style={{
-              margin: 0,
-              color: "#0f172a",
-              fontWeight: 800,
-              fontSize: "clamp(32px, 5vw, 54px)",
-            }}
-          >
-            Contact Us
-          </h1>
-
-          <p
-            style={{
-              maxWidth: "720px",
-              margin: "14px auto 0",
-              color: "#475569",
-              fontSize: "17px",
-              lineHeight: 1.7,
-            }}
-          >
-            Send your message directly to our team. We will review your query and
-            respond as soon as possible.
-          </p>
+          {selectedProperty ? (
+            <div className="selected-property">
+              Selected Property: {selectedProperty}
+            </div>
+          ) : null}
         </div>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.94)",
-            borderRadius: "30px",
-            boxShadow: "0 16px 40px rgba(15,23,42,0.10)",
-            border: "1px solid rgba(21,150,212,0.08)",
-            overflow: "hidden",
-            marginBottom: "26px",
-          }}
-        >
-          <div
-            style={{
-              padding: "22px 26px",
-              background: "linear-gradient(90deg, #0f9d7a 0%, #1d9bf0 100%)",
-            }}
-          >
-            <h2
-              style={{
-                margin: 0,
-                color: "#ffffff",
-                fontSize: "24px",
-                fontWeight: 800,
-              }}
-            >
-              Customer Message Form
-            </h2>
+        <div className="message-card">
+          <div className="message-card-header">
+            <h2>Customer Message Form</h2>
           </div>
 
-          <div className="contact-form-grid">
-            <div className="contact-form-left">
-              {successMessage ? (
-                <div className="contact-alert contact-alert-success">
-                  {successMessage}
-                </div>
-              ) : null}
+          <div className="message-card-body">
+            {successMessage ? <div className="alert success">{successMessage}</div> : null}
+            {errorMessage ? <div className="alert error">{errorMessage}</div> : null}
 
-              {errorMessage ? (
-                <div className="contact-alert contact-alert-error">
-                  {errorMessage}
-                </div>
-              ) : null}
-
-              <form className="contact-form" onSubmit={handleSubmit}>
-                <div className="contact-two-col">
-                  <div>
-                    <label className="contact-label">
-                      Your Name <span>*</span>
-                    </label>
-                    <input
-                      className="contact-input"
-                      type="text"
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="contact-label">
-                      Email Address <span>*</span>
-                    </label>
-                    <input
-                      className="contact-input"
-                      type="email"
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email address"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="contact-two-col">
-                  <div>
-                    <label className="contact-label">
-                      Phone / Mobile <span>*</span>
-                    </label>
-                    <input
-                      className="contact-input"
-                      type="text"
-                      name="phone"
-                      value={form.phone}
-                      onChange={handleChange}
-                      placeholder="Enter your phone number"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="contact-label">
-                      Your Query Is For <span>*</span>
-                    </label>
-                    <select
-                      className="contact-input"
-                      name="queryType"
-                      value={form.queryType}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option>General Inquiry</option>
-                      <option>Corporate Office</option>
-                      <option>Sales Office</option>
-                      <option>Project Information</option>
-                      <option>Customer Support</option>
-                      <option>Partnership</option>
-                    </select>
-                  </div>
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <div className="two-col">
+                <div>
+                  <label>Your Name <span>*</span></label>
+                  <input name="name" value={form.name} onChange={handleChange} placeholder="Enter your full name" required />
                 </div>
 
                 <div>
-                  <label className="contact-label">
-                    Subject <span>*</span>
-                  </label>
-                  <input
-                    className="contact-input"
-                    type="text"
-                    name="subject"
-                    value={form.subject}
-                    onChange={handleChange}
-                    placeholder="Write your subject"
-                    required
-                  />
+                  <label>Email Address <span>*</span></label>
+                  <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email address" required />
                 </div>
-
-                <div>
-                  <label className="contact-label">
-                    Your Message <span>*</span>
-                  </label>
-                  <textarea
-                    className="contact-textarea"
-                    name="message"
-                    value={form.message}
-                    onChange={handleChange}
-                    placeholder="Write your message here..."
-                    required
-                  />
-                </div>
-
-                <div>
-                  <button className="contact-submit-btn" type="submit" disabled={loading}>
-                    {loading ? "Sending..." : "Send Message"}
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div className="contact-form-right">
-              <div className="contact-side-card">
-                <h3>Corporate Office</h3>
-                <p>
-                  House# 05, Flat# C-4 &amp; C-5, Road# 21, Gulshan-1,
-                  Dhaka-1212, Bangladesh
-                </p>
-                <p><strong>Tel:</strong> +88-02-226600699</p>
               </div>
 
-              <div className="contact-side-card">
-                <h3>Sales Office</h3>
-                <p>
-                  Level-19, Nafi Tower, 53, Gulshan-Avenue, Gulshan-1,
-                  Dhaka-1212, Bangladesh
-                </p>
-                <p><strong>Tel:</strong> +88-02-8833232</p>
+              <div className="two-col">
+                <div>
+                  <label>Phone / Mobile <span>*</span></label>
+                  <input name="phone" value={form.phone} onChange={handleChange} placeholder="Enter your phone number" required />
+                </div>
+
+                <div>
+                  <label>Your Query Is For <span>*</span></label>
+                  <select name="queryType" value={form.queryType} onChange={handleChange} required>
+                    <option>General Inquiry</option>
+                    <option>Property Enquiry</option>
+                    <option>Site Visit Request</option>
+                    <option>Customer Support</option>
+                    <option>Business Proposal</option>
+                  </select>
+                </div>
               </div>
-            </div>
+
+              <div>
+                <label>Subject <span>*</span></label>
+                <input name="subject" value={form.subject} onChange={handleChange} placeholder="Write your subject" required />
+              </div>
+
+              <div>
+                <label>Your Message <span>*</span></label>
+                <textarea name="message" value={form.message} onChange={handleChange} placeholder="Write your message here..." required />
+              </div>
+
+              <button type="submit" disabled={loading}>
+                {loading ? "Sending..." : "Send Message"}
+              </button>
+            </form>
           </div>
         </div>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.94)",
-            borderRadius: "28px",
-            overflow: "hidden",
-            boxShadow: "0 16px 40px rgba(15,23,42,0.10)",
-            border: "1px solid rgba(21,150,212,0.08)",
-          }}
-        >
-          <div
-            style={{
-              padding: "18px 22px",
-              background: "linear-gradient(90deg, #0f9d7a 0%, #1d9bf0 100%)",
-            }}
-          >
-            <h2
-              style={{
-                margin: 0,
-                color: "#ffffff",
-                fontSize: "24px",
-                fontWeight: 800,
-              }}
-            >
-              Office Map
-            </h2>
-          </div>
-
-          <div style={{ height: "460px" }}>
-            <iframe
-              title="Real Capita Group Map"
-              src="https://www.google.com/maps?q=House%205%20Road%2021%20Gulshan%201%20Dhaka&z=16&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0, display: "block" }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </div>
+        <ContactMap />
       </div>
 
       <style jsx>{`
-        .contact-form-grid {
-          display: grid;
-          grid-template-columns: 1.15fr 0.85fr;
-          gap: 0;
+        .contact-page {
+          padding: 54px 20px 76px;
+          background: transparent;
         }
 
-        .contact-form-left {
-          padding: 28px;
-          background: #f8fbff;
+        .contact-container {
+          max-width: 900px;
+          margin: 0 auto;
         }
 
-        .contact-form-right {
-          padding: 28px;
-          background: linear-gradient(180deg, #f9fdff 0%, #eef8ff 100%);
-          border-left: 1px solid #e5e7eb;
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
+        .contact-heading {
+          text-align: center;
+          margin-bottom: 32px;
         }
 
-        .contact-form {
-          display: grid;
-          gap: 18px;
+        .contact-badge {
+          margin: 0 0 10px;
+          color: #16a34a;
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
         }
 
-        .contact-two-col {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 18px;
-        }
-
-        .contact-label {
-          display: block;
-          margin-bottom: 8px;
+        .contact-heading h1 {
+          margin: 0;
           color: #0f172a;
-          font-size: 15px;
-          font-weight: 700;
+          font-size: clamp(34px, 5vw, 56px);
+          font-weight: 900;
+          letter-spacing: -0.04em;
         }
 
-        .contact-label span {
-          color: #ef4444;
+        .contact-heading p {
+          max-width: 720px;
+          margin: 14px auto 0;
+          color: #475569;
+          font-size: 16px;
+          line-height: 1.75;
+          font-weight: 600;
         }
 
-        .contact-input,
-        .contact-textarea {
-          width: 100%;
-          border: 1px solid #dbe2ea;
+        .selected-property {
+          max-width: 720px;
+          margin: 18px auto 0;
+          background: #fff7ed;
+          color: #9a3412;
+          border: 1px solid #fdba74;
+          padding: 12px 16px;
           border-radius: 14px;
-          background: #ffffff;
-          color: #334155;
-          font-size: 15px;
-          padding: 14px 16px;
-          outline: none;
-          box-sizing: border-box;
-        }
-
-        .contact-input:focus,
-        .contact-textarea:focus {
-          border-color: #1d9bf0;
-          box-shadow: 0 0 0 4px rgba(29, 155, 240, 0.12);
-        }
-
-        .contact-textarea {
-          min-height: 180px;
-          resize: vertical;
-        }
-
-        .contact-submit-btn {
-          border: none;
-          background: linear-gradient(90deg, #ef4444 0%, #e11d48 100%);
-          color: #ffffff;
-          padding: 15px 28px;
-          border-radius: 14px;
-          font-size: 15px;
           font-weight: 800;
-          cursor: pointer;
-          box-shadow: 0 10px 22px rgba(225, 29, 72, 0.22);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
         }
 
-        .contact-submit-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 14px 28px rgba(225, 29, 72, 0.28);
-        }
+      .message-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(37, 99, 235, 0.10);
+  margin-bottom: 34px;
+}
+     .message-card-header {
+  padding: 24px 32px;
+  background:
+    linear-gradient(135deg, #0f9f6e 0%, #2387e8 100%);
+  position: relative;
+}
 
-        .contact-submit-btn:disabled {
+        .message-card-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.message-card-body {
+  padding: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 36%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.contact-form {
+  display: grid;
+  gap: 20px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+     label {
+  display: block;
+  margin-bottom: 9px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  padding: 15px 17px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #2387e8;
+  background: #ffffff;
+  box-shadow: 0 0 0 5px rgba(35, 135, 232, 0.12);
+}
+     textarea {
+  min-height: 170px;
+  resize: vertical;
+}
+
+button {
+  width: fit-content;
+  border: none;
+  border-radius: 16px;
+  padding: 15px 34px;
+  background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+}
+        button:disabled {
           opacity: 0.7;
           cursor: not-allowed;
         }
 
-        .contact-side-card {
-          background: #ffffff;
-          border-radius: 18px;
-          padding: 18px;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
-        }
-
-        .contact-side-card h3 {
-          margin: 0 0 12px 0;
-          color: #0f172a;
-          font-size: 20px;
-          font-weight: 800;
-        }
-
-        .contact-side-card p {
-          margin: 0 0 10px 0;
-          color: #475569;
-          font-size: 15px;
-          line-height: 1.7;
-        }
-
-        .contact-alert {
-          margin-bottom: 16px;
+        .alert {
           padding: 14px 16px;
           border-radius: 14px;
-          font-size: 14px;
-          font-weight: 700;
+          font-weight: 800;
+          margin-bottom: 18px;
         }
 
-        .contact-alert-success {
+        .alert.success {
           background: #dcfce7;
           color: #166534;
-          border: 1px solid #86efac;
         }
 
-        .contact-alert-error {
+        .alert.error {
           background: #fee2e2;
           color: #991b1b;
-          border: 1px solid #fca5a5;
         }
 
-        @media (max-width: 1024px) {
-          .contact-form-grid {
+        @media (max-width: 720px) {
+          .two-col {
             grid-template-columns: 1fr;
           }
 
-          .contact-form-right {
-            border-left: none;
-            border-top: 1px solid #e5e7eb;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .contact-two-col {
-            grid-template-columns: 1fr;
+          .message-card-body {
+            padding: 24px 18px 28px;
           }
 
-          .contact-form-left,
-          .contact-form-right {
-            padding: 18px;
+          button {
+            width: 100%;
           }
         }
       `}</style>

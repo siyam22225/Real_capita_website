@@ -1,29 +1,93 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const slides = [
-  "/images/hero/slide-1.jpg",
-  "/images/hero/slide-2.jpg",
-  "/images/hero/slide-3.jpg",
-  "/images/hero/slide-4.jpg",
+type HomeSlide = {
+  id: string;
+  title?: string | null;
+  subtitle?: string | null;
+  imageUrl: string;
+  buttonText?: string | null;
+  buttonHref?: string | null;
+  sortOrder?: number;
+};
+
+const fallbackSlides: HomeSlide[] = [
+  {
+    id: "fallback-1",
+    imageUrl: "/images/hero/slide-1.jpg",
+  },
+  {
+    id: "fallback-2",
+    imageUrl: "/images/hero/slide-2.jpg",
+  },
+  {
+    id: "fallback-3",
+    imageUrl: "/images/hero/slide-3.jpg",
+  },
+  {
+    id: "fallback-4",
+    imageUrl: "/images/hero/slide-4.jpg",
+  },
 ];
 
 export default function HeroSlider() {
+  const [slides, setSlides] = useState<HomeSlide[]>(fallbackSlides);
   const [current, setCurrent] = useState(0);
+
+  const activeSlides = useMemo(() => {
+    return slides.length > 0 ? slides : fallbackSlides;
+  }, [slides]);
+
+  useEffect(() => {
+    async function loadSlides() {
+      try {
+        const res = await fetch("/api/home-slides", {
+          cache: "no-store",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success || !Array.isArray(data.data)) {
+          return;
+        }
+
+        const dynamicSlides = data.data
+          .filter((item: HomeSlide) => item.imageUrl)
+          .sort(
+            (a: HomeSlide, b: HomeSlide) =>
+              (a.sortOrder || 0) - (b.sortOrder || 0)
+          );
+
+        if (dynamicSlides.length > 0) {
+          setSlides(dynamicSlides);
+          setCurrent(0);
+        }
+      } catch {
+        setSlides(fallbackSlides);
+      }
+    }
+
+    loadSlides();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % activeSlides.length);
     }, 2000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [activeSlides.length]);
 
   const goToSlide = (index: number) => setCurrent(index);
+
   const goPrev = () =>
-    setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  const goNext = () => setCurrent((prev) => (prev + 1) % slides.length);
+    setCurrent((prev) =>
+      prev === 0 ? activeSlides.length - 1 : prev - 1
+    );
+
+  const goNext = () =>
+    setCurrent((prev) => (prev + 1) % activeSlides.length);
 
   return (
     <section style={{ width: "100%", background: "#fff" }}>
@@ -39,42 +103,42 @@ export default function HeroSlider() {
         <div
           style={{
             display: "flex",
-            width: `${slides.length * 100}%`,
-            transform: `translateX(-${current * (100 / slides.length)}%)`,
+            width: `${activeSlides.length * 100}%`,
+            transform: `translateX(-${current * (100 / activeSlides.length)}%)`,
             transition: "transform 0.8s ease-in-out",
           }}
         >
-          {slides.map((slide, index) => (
- <div
-  key={index}
-  style={{
-    width: `${100 / slides.length}%`,
-    flexShrink: 0,
-    height: "clamp(260px, 55vw, 700px)",
-    position: "relative",
-  }}
->
-  <img
-    src={slide}
-    alt={`Slide ${index + 1}`}
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      display: "block",
-    }}
-  />
+          {activeSlides.map((slide, index) => (
+            <div
+              key={slide.id || index}
+              style={{
+                width: `${100 / activeSlides.length}%`,
+                flexShrink: 0,
+                height: "clamp(260px, 55vw, 700px)",
+                position: "relative",
+              }}
+            >
+              <img
+                src={slide.imageUrl}
+                alt={slide.title || `Slide ${index + 1}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
 
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-     background:
-  "linear-gradient(135deg, rgba(7,178,75,0.18) 0%, rgba(21,150,212,0.22) 55%, rgba(255,255,255,0.10) 100%)",
-      pointerEvents: "none",
-    }}
-  />
-</div>
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(135deg, rgba(7,178,75,0.18) 0%, rgba(21,150,212,0.22) 55%, rgba(255,255,255,0.10) 100%)",
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
           ))}
         </div>
 
@@ -128,7 +192,7 @@ export default function HeroSlider() {
             gap: "10px",
           }}
         >
-          {slides.map((_, index) => (
+          {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
@@ -139,7 +203,8 @@ export default function HeroSlider() {
                 borderRadius: "999px",
                 border: "none",
                 cursor: "pointer",
-                background: index === current ? "#ffffff" : "rgba(255,255,255,0.55)",
+                background:
+                  index === current ? "#ffffff" : "rgba(255,255,255,0.55)",
               }}
             />
           ))}

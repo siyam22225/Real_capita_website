@@ -1,7 +1,51 @@
 import Link from "next/link";
 import { enterpriseItems } from "@/data/enterprises";
+import { prisma } from "@/lib/prisma";
 
-export default function EnterprisePage() {
+export const dynamic = "force-dynamic";
+
+type EnterpriseListItem = {
+  id: string | number;
+  slug: string;
+  name: string;
+  sortOrder?: number;
+};
+
+async function getEnterpriseItems(): Promise<EnterpriseListItem[]> {
+  try {
+    const items = await prisma.enterprise.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        sortOrder: true,
+      },
+    });
+
+    if (items.length > 0) {
+      return items;
+    }
+  } catch (error) {
+    console.error("ENTERPRISE_PAGE_DYNAMIC_ERROR", error);
+  }
+
+  return enterpriseItems.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+    sortOrder: item.id,
+  }));
+}
+
+export default async function EnterprisePage() {
+  const items = await getEnterpriseItems();
+
   return (
     <section
       style={{
@@ -46,14 +90,12 @@ export default function EnterprisePage() {
             padding: "30px",
           }}
         >
-          {enterpriseItems.map((item, index) => (
+          {items.map((item, index) => (
             <div
               key={item.id}
               style={{
                 borderBottom:
-                  index !== enterpriseItems.length - 1
-                    ? "1px solid #e5e7eb"
-                    : "none",
+                  index !== items.length - 1 ? "1px solid #e5e7eb" : "none",
               }}
             >
               <Link
@@ -67,7 +109,7 @@ export default function EnterprisePage() {
                   fontWeight: 500,
                 }}
               >
-                {item.name}
+                {item.name.trim()}
               </Link>
             </div>
           ))}

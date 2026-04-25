@@ -13,7 +13,7 @@ export const enterpriseItems: EnterpriseItem[] = [
   {
     id: 1,
     slug: "land-rpcdl",
-    name: "Land RPCDL",
+    name: "RC Property",
     location: "Abdullahpur, Keranigonj, Dhaka",
     image: "/images/enterprises/enterprise-1.jpg",
     shortDescription: "A modern enterprise project with strong location value.",
@@ -27,7 +27,7 @@ export const enterpriseItems: EnterpriseItem[] = [
   {
     id: 2,
     slug: "apartment-rchl",
-    name: "Apartment RCHL",
+    name: " RC Holdings ",
     location: "Rupgonj, Narayangonj",
     image: "/images/enterprises/enterprise-2.jpg",
     shortDescription: "A promising enterprise development in a strategic area.",
@@ -41,7 +41,7 @@ export const enterpriseItems: EnterpriseItem[] = [
   {
     id: 3,
     slug: "hotel-rc-bay",
-    name: "Hotel RC-BAY",
+    name: " RC-BAY",
     location: "Sreenagar, Munshiganj",
     image: "/images/enterprises/enterprise-3.jpg",
     shortDescription: "A location-focused enterprise with future growth potential.",
@@ -69,7 +69,7 @@ export const enterpriseItems: EnterpriseItem[] = [
   {
     id: 5,
     slug: "afsen-group",
-    name: "AFSEN Group",
+    name: "AFSEN Construction",
     location: "Kuakata, Patuakhali",
     image: "/images/enterprises/enterprise-5.jpg",
     shortDescription: "A distinctive enterprise with a strong location-driven identity.",
@@ -83,7 +83,7 @@ export const enterpriseItems: EnterpriseItem[] = [
   {
     id: 6,
     slug: "abdf",
-    name: "ABDF",
+    name: "ABD Foundation",
     location: "Abdullahpur, Keranigonj, Dhaka",
     image: "/images/enterprises/enterprise-6.jpg",
     shortDescription: "A planned enterprise project focused on practical value.",

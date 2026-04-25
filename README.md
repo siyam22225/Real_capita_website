@@ -4,10 +4,10 @@ A clean, beginner-friendly Next.js + TypeScript project structure for a modern c
 
 ## Run locally
 
-```bash
+bash
 npm install
 npm run dev
-```
+
 
 Then open `http://localhost:3000`.
 
