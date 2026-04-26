@@ -26,7 +26,7 @@ const FALLBACK_SLIDES: HomeSlide[] = [
     id: "fallback-1",
     title: "",
     subtitle: "",
-    imageUrl: "/images/hero/hero-1.jpg",
+    imageUrl: "/images/hero/slide-1.jpg",
     buttonText: "",
     buttonHref: "",
   },
@@ -37,7 +37,7 @@ function cleanText(value?: string | null) {
 }
 
 function getImage(slide: HomeSlide) {
-  return cleanText(slide.imageUrl) || cleanText(slide.image) || "/images/hero/hero-1.jpg";
+ return cleanText(slide.imageUrl) || cleanText(slide.image) || "/images/hero/slide-1.jpg";
 }
 
 function getAltText(slide: HomeSlide) {
