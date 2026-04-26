@@ -1,122 +1,463 @@
 import Image from "next/image";
 
+const messageParagraphs = [
+  "Bangladesh has experienced high economic growth accompanied with rapid urbanization. We are always bettering ourselves in pursuit of long-term sustainable growth. Urban growth has resulted in a tremendous increase of energy consumption.",
+  "Dhaka Metropolitan city has now turned into a densely populated, bustling city. Millions of people reside in Dhaka city, the capital of Bangladesh for service, business & other purposes. Unfortunately, the increase in housing does not correlate to the population growth.",
+  "It is possible to reduce the mounting pressure of our rapidly growing population in Dhaka city largely by developing the surrounding area of Dhaka city in a controlled, pre-planned manner & by establishing permanent residential accommodation for this vast population.",
+  "Real estate developers & agents are there to make your dream come true, to take you towards your dreamland. With us, we ensure that one gets the luxury of living away from noise pollution & in close proximity of all sorts of amenities such as transportation, shopping malls, banks, gardens, meditation centers as well as educational institutions. We have built a sustainable satellite township to give our stakeholders an eco-friendly living solution suited to your lifestyle. A part of delivering exceptional customer service is providing them with a knowledgeable, professional, qualified & experienced sales team to assist with all the aspects of the plot buying process.",
+  "Our experienced consultants are specialized in marketing & managing Real Capita Group. Real Capita Group has been handpicked in order to give clients the best possible selection of property in “RC Maya Kanan” & “RC Rivery Village” to cater to all budget ranges & to ensure that we offer only the best.",
+  "Real Capita Group: Create your own sunshine from generation to generation.",
+];
+
+const profileItems = [
+  ["Position", "Chairman"],
+  ["Education", "B.Com (Hons), Management"],
+  ["Profession", "Businessman & Contractor"],
+  ["Achievements", "Recognized for leadership, dedication, and development vision."],
+  [
+    "Business Activities",
+    "First Class Contractor in LGED & Roads & Highways department all over Dhaka City Corporation. (1981-2006)",
+  ],
+  ["Legacy", "A lasting contribution to structured growth and corporate trust."],
+  ["Personal Qualities", "Known for integrity, vision, and commitment to excellence."],
+  ["Foreign Visit", "India & KSA"],
+];
+
 export default function FormerChairmanPage() {
   return (
-    <section
-      style={{
-        background: "linear-gradient(135deg, #123a63 0%, #0f2744 100%)",
-        padding: "70px 0",
-        color: "#fff",
-      }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.2fr 0.9fr",
-            gap: "40px",
-            alignItems: "start",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                margin: "0 0 10px 0",
-                color: "#22c55e",
-                fontSize: "14px",
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-              }}
-            >
-              Who We Are
-            </p>
+    <section className="formerChairmanPage">
+      <div className="chairmanGlow chairmanGlowOne" />
+      <div className="chairmanGlow chairmanGlowTwo" />
 
-            <h1
-            className="section-title"
-              style={{
-                margin: "0 0 28px 0",
-               
-                lineHeight: "1.1",
-                fontWeight: 800,
-              }}
-            >
-              Former Chairman Message
-            </h1>
-
-            <div style={{ fontSize: "20px", lineHeight: "1.95", color: "rgba(255,255,255,0.92)" }}>
-              <p>
-               Bangladesh has experienced high economic growth accompanied with rapid urbanization. We are always bettering ourselves in pursuit of long-term sustainable growth. Urban growth has resulted in a tremendous increase of energy consumption.
+      <div className="chairmanContainer">
+        <div className="chairmanLayout">
+          <main className="chairmanMainColumn">
+            <div className="chairmanIntro">
+              <p className="eyebrow">Who We Are</p>
+              <h1>Former Chairman Message</h1>
+              <p className="introLead">
+                A vision for planned development, responsible growth, and reliable
+                living opportunities for future generations.
               </p>
-              <p>
-               Dhaka Metropolitan city   has now turned into a densely populated, bustling city. Millions of people reside in Dhaka city, the capital of Bangladesh for service, business & other purposes. Unfortunately, the increase in housing does not correlate to the population growth.
-              </p>
-              <p>
-             It is possible to reduce the mounting pressure of our rapidly growing population in Dhaka city largely by developing the surrounding area of Dhaka city in a controlled, pre-planned manner & by establishing permanent residential accommodation for this vast population.
-              </p>
-              <p>
-                Real estate developers & agents are there to make your dream come true, to take you towards your dreamland. With us, we ensure that one gets the luxury of living away from noise pollution & in close proximity of all sorts of amenities such as transportation, shopping malls, banks, gardens, meditation centers as well as educational institutions.   We have built a sustainable satellite township to give our stakeholders an eco-friendly living solution suited to your lifestyle. A part of delivering exceptional customer service is providing them with a knowledgeable, professional, qualified & experienced sales team to assist with all the aspects of the plot buying process.
-              </p>
-              <p>
-                Our experienced consultants are specialized in marketing & managing Real Capita Group. Real Capita Group has been handpicked in order to give clients the best possible selection of property in “RC Maya Kanan” & “RC Rivery Village” to cater to all budget ranges & to ensure that we offer only the best.
-</p>
-<p> 
-  Real Capita Group: Create your own sunshine from generation to generation.
-</p>
-
             </div>
-          </div>
 
-          <div
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "24px",
-              padding: "28px",
-              boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                width: "260px",
-                height: "260px",
-                margin: "0 auto 26px",
-                borderRadius: "999px",
-                overflow: "hidden",
-                border: "6px solid rgba(255,255,255,0.9)",
-                boxShadow: "0 14px 34px rgba(0,0,0,0.25)",
-              }}
-            >
+            <article className="messageArticle">
+              <div className="articleHeader">
+                <span>Message</span>
+                <h2>Building with vision, trust, and long-term responsibility.</h2>
+              </div>
+
+              <div className="messageText">
+                {messageParagraphs.map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className={
+                      index === messageParagraphs.length - 1 ? "closingLine" : ""
+                    }
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </article>
+          </main>
+
+          <aside className="profileCard">
+            <div className="profileImageFrame">
               <Image
                 src="/images/message/former-chairman.jpg"
                 alt="Former Chairman"
                 fill
-                style={{ objectFit: "cover" }}
+                priority
+                sizes="(max-width: 768px) 220px, 280px"
+                className="profileImage"
               />
             </div>
 
-            <h2 style={{ margin: "0 0 8px 0", fontSize: "36px", lineHeight: "1.2", fontWeight: 800 }}>
-              Late Alhaj Md. Anower Hossain
-            </h2>
-
-            <p style={{ margin: "0 0 22px 0", fontSize: "20px", color: "#dbeafe", fontWeight: 700 }}>
-              1960 – 2020
-            </p>
-
-            <div style={{ fontSize: "18px", lineHeight: "1.9", color: "rgba(255,255,255,0.92)" }}>
-              <p><strong>Position:</strong> Chairman</p>
-              <p><strong>Education:</strong> B.Com (Hons), Management</p>
-              <p><strong>Profession:</strong> Businessman &amp; Contractor</p>
-              <p><strong>Achievements:</strong> Recognized for leadership, dedication, and development vision.</p>
-              <p><strong>Business Activities:</strong> First Class Contractor in LGED & Roads & Highways department all over Dhaka City Corporation. (1981- 2006)</p>
-              <p><strong>Legacy:</strong> A lasting contribution to structured growth and corporate trust.</p>
-              <p><strong>Personal Qualities:</strong> Known for integrity, vision, and commitment to excellence.</p>
-              <p><strong>Foreign Visit:</strong>  India & KSA</p>
+            <div className="profileHeading">
+              <h2>Late Alhaj Md. Anower Hossain</h2>
+              <p>1960 – 2020</p>
             </div>
-          </div>
+
+            <div className="profileInfoList">
+              {profileItems.map(([label, value]) => (
+                <div key={label} className="profileInfoItem">
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
       </div>
+
+      <style>{`
+        .formerChairmanPage {
+          position: relative;
+          overflow: hidden;
+          min-height: 100vh;
+          padding: 70px 0 92px;
+          color: #ffffff;
+          background:
+            radial-gradient(circle at 10% 8%, rgba(34, 197, 94, 0.22), transparent 30%),
+            radial-gradient(circle at 90% 18%, rgba(37, 99, 235, 0.24), transparent 34%),
+            linear-gradient(135deg, #071827 0%, #0b2f50 48%, #061222 100%);
+        }
+
+        .formerChairmanPage::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            linear-gradient(90deg, rgba(255,255,255,0.045), transparent 36%, rgba(255,255,255,0.035)),
+            radial-gradient(circle at 50% 100%, rgba(255,255,255,0.075), transparent 42%);
+        }
+
+        .chairmanGlow {
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          border-radius: 999px;
+          filter: blur(44px);
+          opacity: 0.36;
+          pointer-events: none;
+        }
+
+        .chairmanGlowOne {
+          left: -120px;
+          top: 110px;
+          background: #16a34a;
+        }
+
+        .chairmanGlowTwo {
+          right: -120px;
+          bottom: 110px;
+          background: #2563eb;
+        }
+
+        .chairmanContainer {
+          position: relative;
+          z-index: 1;
+          width: min(100% - 48px, 1180px);
+          margin: 0 auto;
+        }
+
+        .chairmanLayout {
+          display: grid;
+          grid-template-columns: minmax(0, 1.12fr) minmax(350px, 430px);
+          gap: 34px;
+          align-items: start;
+        }
+
+        .chairmanMainColumn {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 26px;
+        }
+
+        .chairmanIntro {
+          padding: 0;
+          margin: 0;
+          min-height: 0;
+          height: auto;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+
+        .eyebrow {
+          width: fit-content;
+          margin: 0 0 16px;
+          padding: 9px 15px;
+          border-radius: 999px;
+          color: #bbf7d0;
+          background: rgba(34, 197, 94, 0.13);
+          border: 1px solid rgba(34, 197, 94, 0.20);
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+        }
+
+        .chairmanIntro h1 {
+          max-width: 680px;
+          margin: 0;
+          color: #ffffff;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(42px, 5vw, 66px);
+          line-height: 0.98;
+          letter-spacing: -0.055em;
+          font-weight: 700;
+        }
+
+        .introLead {
+          max-width: 720px;
+          margin: 20px 0 0;
+          color: rgba(226, 232, 240, 0.84);
+          font-size: 18px;
+          line-height: 1.75;
+          font-weight: 600;
+        }
+
+        .profileCard,
+        .messageArticle {
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          background: rgba(255, 255, 255, 0.075);
+          box-shadow:
+            0 24px 70px rgba(0, 0, 0, 0.26),
+            inset 0 1px 0 rgba(255, 255, 255, 0.10);
+          backdrop-filter: blur(12px);
+        }
+
+        .profileCard {
+          border-radius: 32px;
+          padding: 34px;
+          position: sticky;
+          top: 96px;
+        }
+
+        .profileImageFrame {
+          position: relative;
+          width: 250px;
+          height: 250px;
+          margin: 0 auto 28px;
+          border-radius: 999px;
+          overflow: hidden;
+          border: 7px solid rgba(255, 255, 255, 0.92);
+          box-shadow:
+            0 20px 44px rgba(0, 0, 0, 0.34),
+            0 0 0 9px rgba(255, 255, 255, 0.08);
+          background: #ffffff;
+        }
+
+        .profileImage {
+          object-fit: cover;
+        }
+
+        .profileHeading h2 {
+          margin: 0;
+          color: #ffffff;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(28px, 3vw, 38px);
+          line-height: 1.08;
+          letter-spacing: -0.04em;
+          font-weight: 700;
+        }
+
+        .profileHeading p {
+          margin: 10px 0 24px;
+          color: #dbeafe;
+          font-size: 18px;
+          font-weight: 900;
+        }
+
+        .profileInfoList {
+          display: grid;
+          gap: 12px;
+        }
+
+        .profileInfoItem {
+          padding: 14px 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .profileInfoItem span {
+          display: block;
+          margin-bottom: 5px;
+          color: #bbf7d0;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+
+        .profileInfoItem strong {
+          display: block;
+          color: rgba(255, 255, 255, 0.92);
+          font-size: 16px;
+          line-height: 1.65;
+          font-weight: 700;
+          overflow-wrap: anywhere;
+        }
+
+        .messageArticle {
+          border-radius: 30px;
+          padding: 34px 38px;
+        }
+
+        .articleHeader {
+          max-width: 760px;
+          margin-bottom: 24px;
+        }
+
+        .articleHeader span {
+          display: inline-flex;
+          margin-bottom: 10px;
+          color: #bbf7d0;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+
+        .articleHeader h2 {
+          margin: 0;
+          color: #ffffff;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(28px, 3vw, 38px);
+          line-height: 1.15;
+          letter-spacing: -0.045em;
+          font-weight: 700;
+        }
+
+        .messageText {
+          color: rgba(241, 245, 249, 0.90);
+          font-size: 17px;
+          line-height: 1.92;
+          font-weight: 500;
+        }
+
+        .messageText p {
+          margin: 0 0 20px;
+        }
+
+        .messageText p:first-child::first-letter {
+          float: left;
+          padding: 8px 10px 0 0;
+          color: #ffffff;
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: 58px;
+          line-height: 0.82;
+          font-weight: 700;
+        }
+
+        .closingLine {
+          color: #ffffff !important;
+          font-weight: 800 !important;
+          margin-bottom: 0 !important;
+        }
+
+        @media (max-width: 1100px) {
+          .chairmanLayout {
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
+            gap: 26px;
+          }
+
+          .profileCard {
+            padding: 28px;
+          }
+
+          .profileImageFrame {
+            width: 220px;
+            height: 220px;
+          }
+        }
+
+        @media (max-width: 900px) {
+          .formerChairmanPage {
+            padding: 48px 0 72px;
+          }
+
+          .chairmanContainer {
+            width: min(100% - 32px, 1180px);
+          }
+
+          .chairmanLayout {
+            grid-template-columns: 1fr;
+          }
+
+          .profileCard {
+            position: static;
+            order: 2;
+          }
+
+          .chairmanMainColumn {
+            order: 1;
+          }
+
+          .messageArticle {
+            order: 2;
+          }
+
+          .chairmanIntro h1 {
+            font-size: clamp(38px, 8vw, 54px);
+          }
+        }
+
+        @media (max-width: 640px) {
+          .formerChairmanPage {
+            padding: 34px 0 58px;
+          }
+
+          .chairmanContainer {
+            width: min(100% - 24px, 1180px);
+          }
+
+          .chairmanMainColumn {
+            gap: 20px;
+          }
+
+          .chairmanIntro h1 {
+            font-size: 39px;
+            line-height: 1.02;
+            letter-spacing: -0.045em;
+          }
+
+          .introLead {
+            margin-top: 16px;
+            font-size: 16px;
+            line-height: 1.7;
+          }
+
+          .profileCard,
+          .messageArticle {
+            border-radius: 24px;
+          }
+
+          .profileCard {
+            padding: 24px 20px;
+          }
+
+          .profileImageFrame {
+            width: 210px;
+            height: 210px;
+            margin-bottom: 22px;
+            border-width: 6px;
+          }
+
+          .profileHeading h2 {
+            font-size: 30px;
+          }
+
+          .profileHeading p {
+            font-size: 17px;
+          }
+
+          .profileInfoItem strong {
+            font-size: 15px;
+            line-height: 1.65;
+          }
+
+          .messageArticle {
+            padding: 26px 20px;
+          }
+
+          .articleHeader h2 {
+            font-size: 29px;
+          }
+
+          .messageText {
+            font-size: 16px;
+            line-height: 1.82;
+          }
+
+          .messageText p:first-child::first-letter {
+            font-size: 46px;
+          }
+        }
+      `}</style>
     </section>
   );
 }

@@ -965,3 +965,45 @@ body {
   color: #2563eb !important;
   padding-left: 22px !important;
 }
+/* Responsive stability and mobile performance safety */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  body {
+    text-rendering: optimizeLegibility;
+  }
+
+  .container {
+    width: min(100% - 28px, 1180px);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .container {
+    width: min(100% - 22px, 1180px);
+  }
+}
