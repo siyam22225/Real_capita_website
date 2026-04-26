@@ -18,14 +18,13 @@ const mediaItems = [
 ];
 
 function normalizeEnterprises(data: unknown): EnterpriseMenuItem[] {
-  const source =
-    Array.isArray(data)
-      ? data
-      : Array.isArray((data as { data?: unknown[] })?.data)
-        ? (data as { data: unknown[] }).data
-        : Array.isArray((data as { enterprises?: unknown[] })?.enterprises)
-          ? (data as { enterprises: unknown[] }).enterprises
-          : [];
+  const source = Array.isArray(data)
+    ? data
+    : Array.isArray((data as { data?: unknown[] })?.data)
+      ? (data as { data: unknown[] }).data
+      : Array.isArray((data as { enterprises?: unknown[] })?.enterprises)
+        ? (data as { enterprises: unknown[] }).enterprises
+        : [];
 
   return source
     .map((item) => {
@@ -599,10 +598,6 @@ export default function Header() {
           justify-content: space-between !important;
         }
 
-        .rcgHeaderLogoLink {
-          margin-left: 0 !important;
-        }
-
         .rcgHeaderLogoWrap {
           position: relative;
           width: 380px;
@@ -613,6 +608,66 @@ export default function Header() {
           margin-left: auto !important;
           margin-right: 0 !important;
           justify-content: flex-end !important;
+        }
+
+        .mobile-menu-toggle {
+          width: 56px !important;
+          height: 56px !important;
+          padding: 0 !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+          border-radius: 18px !important;
+          background: #050816 !important;
+          box-shadow:
+            0 14px 30px rgba(0, 0, 0, 0.22),
+            0 0 0 4px rgba(255, 255, 255, 0.72) !important;
+          display: none !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+          transition:
+            transform 0.24s ease,
+            box-shadow 0.24s ease,
+            background 0.24s ease,
+            border-color 0.24s ease !important;
+        }
+
+        .mobile-menu-toggle:hover {
+          transform: translateY(-3px) scale(1.04) !important;
+          background: linear-gradient(135deg, #16a34a 0%, #2563eb 100%) !important;
+          border-color: rgba(255, 255, 255, 0.22) !important;
+          box-shadow:
+            0 18px 34px rgba(37, 99, 235, 0.22),
+            0 0 0 5px rgba(37, 99, 235, 0.12) !important;
+        }
+
+        .mobile-menu-dot-badge {
+          width: 18px !important;
+          height: 18px !important;
+          display: grid !important;
+          grid-template-columns: repeat(3, 1fr) !important;
+          grid-template-rows: repeat(3, 1fr) !important;
+          gap: 3px !important;
+          place-items: center !important;
+          align-content: center !important;
+          justify-content: center !important;
+          margin: 0 auto !important;
+        }
+
+        .mobile-menu-dot-badge span {
+          width: 4px !important;
+          height: 4px !important;
+          border-radius: 999px !important;
+          background: #ffffff !important;
+          display: block !important;
+          transition:
+            background 0.24s ease,
+            transform 0.24s ease,
+            opacity 0.24s ease !important;
+        }
+
+        .mobile-menu-toggle:hover .mobile-menu-dot-badge span {
+          background: #ffffff !important;
+          transform: scale(1.08) !important;
         }
 
         @media (max-width: 1200px) {
@@ -631,6 +686,28 @@ export default function Header() {
           }
         }
 
+        @media (max-width: 1024px) {
+          .mobile-menu-toggle {
+            display: inline-flex !important;
+          }
+
+          .desktop-nav,
+          .rcgDesktopNav {
+            display: none !important;
+          }
+        }
+
+        @media (min-width: 1025px) {
+          .mobile-menu-toggle {
+            display: none !important;
+          }
+
+          .desktop-nav,
+          .rcgDesktopNav {
+            display: flex !important;
+          }
+        }
+
         @media (max-width: 900px) {
           .rcgHeaderInner {
             padding-left: 18px !important;
@@ -642,6 +719,58 @@ export default function Header() {
             height: 54px;
           }
         }
+          @media (max-width: 1024px) {
+  .rcgHeaderInner {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    min-height: 86px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .rcgHeaderLogoLink {
+    margin-right: auto !important;
+    flex-shrink: 1 !important;
+  }
+
+  .rcgHeaderLogoWrap {
+    width: 240px !important;
+    height: 56px !important;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .desktop-nav,
+  .rcgDesktopNav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .rcgHeaderInner {
+    min-height: 82px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .rcgHeaderLogoWrap {
+    width: 220px !important;
+    height: 52px !important;
+  }
+
+  .mobile-menu-toggle {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 17px !important;
+  }
+}
       `}</style>
     </header>
   );
