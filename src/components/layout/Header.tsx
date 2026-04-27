@@ -82,9 +82,7 @@ export default function Header() {
 
     async function loadHeaderSettings() {
       try {
-        const response = await fetch("/api/header-settings", {
-          cache: "no-store",
-        });
+        const response = await fetch("/api/header-settings");
 
         const json = await response.json();
 

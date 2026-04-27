@@ -39,75 +39,52 @@ export default function Footer() {
   );
 
   useEffect(() => {
-    async function loadOfficeInfo() {
+    async function loadSiteContactSettings() {
       try {
-        const res = await fetch("/api/office-settings", {
-          cache: "no-store",
-        });
-
+        const res = await fetch("/api/site-contact-settings");
         const data = await res.json();
 
-        if (!res.ok || !data.success || !Array.isArray(data.data)) {
-          return;
-        }
+        if (!res.ok || !data.success) return;
 
-        const dynamicOffices = data.data
-          .filter((item: OfficeSetting) => item.title && item.address)
-          .sort(
-            (a: OfficeSetting, b: OfficeSetting) =>
-              (a.sortOrder || 0) - (b.sortOrder || 0)
-          )
-          .map((item: OfficeSetting) => ({
-            title: item.title,
-            address: item.address,
-            phone: item.phone,
-            email: item.email,
-            sortOrder: item.sortOrder || 0,
-          }));
+        const dynamicOffices = Array.isArray(data.offices)
+          ? data.offices
+              .filter((item: OfficeSetting) => item.title && item.address)
+              .sort(
+                (a: OfficeSetting, b: OfficeSetting) =>
+                  (a.sortOrder || 0) - (b.sortOrder || 0)
+              )
+              .map((item: OfficeSetting) => ({
+                title: item.title,
+                address: item.address,
+                phone: item.phone,
+                email: item.email,
+                sortOrder: item.sortOrder || 0,
+              }))
+          : [];
 
-        if (dynamicOffices.length > 0) {
-          setOfficeInfo(dynamicOffices);
-        }
+        const dynamicLinks = Array.isArray(data.socialLinks)
+          ? data.socialLinks
+              .filter((item: SocialLink) => item.label && item.href)
+              .sort(
+                (a: SocialLink, b: SocialLink) =>
+                  (a.sortOrder || 0) - (b.sortOrder || 0)
+              )
+              .map((item: SocialLink) => ({
+                label: item.label,
+                href: item.href,
+                iconUrl: item.iconUrl || null,
+                sortOrder: item.sortOrder || 0,
+              }))
+          : [];
+
+        if (dynamicOffices.length > 0) setOfficeInfo(dynamicOffices);
+        if (dynamicLinks.length > 0) setSocialLinks(dynamicLinks);
       } catch {
-        // Keep static fallback office info if API fails.
+        // Keep static fallback office and social info if API fails.
       }
     }
 
-    async function loadSocialLinks() {
-      try {
-        const res = await fetch("/api/social-links", {
-          cache: "no-store",
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success || !Array.isArray(data.data)) {
-          return;
-        }
-
-        const dynamicLinks = data.data
-          .filter((item: SocialLink) => item.label && item.href)
-          .sort(
-            (a: SocialLink, b: SocialLink) =>
-              (a.sortOrder || 0) - (b.sortOrder || 0)
-          )
-          .map((item: SocialLink) => ({
-            label: item.label,
-            href: item.href,
-            iconUrl: item.iconUrl || null,
-            sortOrder: item.sortOrder || 0,
-          }));
-
-        if (dynamicLinks.length > 0) {
-          setSocialLinks(dynamicLinks);
-        }
-      } catch {
-        // Keep static fallback social links if API fails.
-      }
-    }
-
-    loadOfficeInfo();
-    loadSocialLinks();
+    loadSiteContactSettings();
   }, []);
 
   return (

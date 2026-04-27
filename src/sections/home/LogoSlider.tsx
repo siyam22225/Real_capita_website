@@ -26,7 +26,7 @@ export default function LogoSlider() {
 
     async function loadLogos() {
       try {
-        const res = await fetch("/api/logo-settings", { cache: "no-store" });
+        const res = await fetch("/api/logo-settings");
         const data = await res.json();
 
         const loaded = Array.isArray(data.brandLogos)

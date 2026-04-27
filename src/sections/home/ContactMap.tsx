@@ -82,17 +82,15 @@ export default function ContactMap() {
   useEffect(() => {
     async function loadOffices() {
       try {
-        const res = await fetch("/api/office-settings", {
-          cache: "no-store",
-        });
+        const res = await fetch("/api/site-contact-settings");
 
         const data = await res.json();
 
-        if (!res.ok || !data.success || !Array.isArray(data.data)) {
+        if (!res.ok || !data.success || !Array.isArray(data.offices)) {
           return;
         }
 
-        const dynamicOffices = data.data
+        const dynamicOffices = data.offices
           .filter((item: OfficeApiItem) => item.key && item.title && item.address)
           .sort(
             (a: OfficeApiItem, b: OfficeApiItem) =>

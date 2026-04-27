@@ -45,13 +45,13 @@ export default function SocialSidebar() {
 
     async function loadLinks() {
       try {
-        const res = await fetch("/api/social-links", { cache: "no-store" });
+        const res = await fetch("/api/site-contact-settings");
         const json = await res.json();
 
-        const data = Array.isArray(json?.data)
-          ? json.data
-          : Array.isArray(json?.socialLinks)
-            ? json.socialLinks
+        const data = Array.isArray(json?.socialLinks)
+          ? json.socialLinks
+          : Array.isArray(json?.data)
+            ? json.data
             : [];
 
         if (!mounted) return;

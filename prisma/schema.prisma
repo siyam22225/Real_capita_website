@@ -180,3 +180,16 @@ model BrandLogo {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model SeoSetting {
+  id                     String   @id @default("main")
+  siteTitle              String   @default("Real Capita Group")
+  metaDescription        String   @default("")
+  metaKeywords           String   @default("")
+  ogTitle                String   @default("")
+  ogDescription          String   @default("")
+  ogImage                String   @default("")
+  googleVerificationCode String   @default("")
+  allowIndexing          Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}

@@ -55,7 +55,7 @@ export default function MediaVideosPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch("/api/videos", { cache: "no-store" });
+        const res = await fetch("/api/videos");
         const data = await res.json();
 
         if (!res.ok) {
