@@ -27,21 +27,10 @@ export default function PublicContentProtection() {
     const root = document.documentElement;
     root.classList.add("publicContentGuard");
 
-    const blockContextMenu = (event: MouseEvent) => {
+    const blockEvent = (event: Event) => {
       if (isEditableTarget(event.target)) return;
       event.preventDefault();
-    };
-
-    const blockCopy = (event: ClipboardEvent) => {
-      if (isEditableTarget(event.target)) return;
-      event.preventDefault();
-    };
-
-    const blockDrag = (event: DragEvent) => {
-      const target = event.target;
-      if (target instanceof HTMLElement && target.closest("img")) {
-        event.preventDefault();
-      }
+      event.stopPropagation();
     };
 
     const blockShortcuts = (event: KeyboardEvent) => {
@@ -61,18 +50,22 @@ export default function PublicContentProtection() {
       }
     };
 
-    document.addEventListener("contextmenu", blockContextMenu);
-    document.addEventListener("copy", blockCopy);
-    document.addEventListener("cut", blockCopy);
-    document.addEventListener("dragstart", blockDrag);
+    document.addEventListener("contextmenu", blockEvent);
+    document.addEventListener("copy", blockEvent);
+    document.addEventListener("cut", blockEvent);
+    document.addEventListener("selectstart", blockEvent);
+    document.addEventListener("dragstart", blockEvent);
+    document.addEventListener("drop", blockEvent);
     document.addEventListener("keydown", blockShortcuts);
 
     return () => {
       root.classList.remove("publicContentGuard");
-      document.removeEventListener("contextmenu", blockContextMenu);
-      document.removeEventListener("copy", blockCopy);
-      document.removeEventListener("cut", blockCopy);
-      document.removeEventListener("dragstart", blockDrag);
+      document.removeEventListener("contextmenu", blockEvent);
+      document.removeEventListener("copy", blockEvent);
+      document.removeEventListener("cut", blockEvent);
+      document.removeEventListener("selectstart", blockEvent);
+      document.removeEventListener("dragstart", blockEvent);
+      document.removeEventListener("drop", blockEvent);
       document.removeEventListener("keydown", blockShortcuts);
     };
   }, [isAdminRoute]);
@@ -80,31 +73,82 @@ export default function PublicContentProtection() {
   if (isAdminRoute) return null;
 
   return (
-    <style jsx global>{`
-      html.publicContentGuard body {
-        -webkit-touch-callout: none;
-      }
+    <>
+      <div className="publicWatermark" aria-hidden="true">
+        <span>Real Capita Group</span>
+        <span>Real Capita Group</span>
+        <span>Real Capita Group</span>
+        <span>Real Capita Group</span>
+        <span>Real Capita Group</span>
+        <span>Real Capita Group</span>
+      </div>
 
-      html.publicContentGuard body * {
-        -webkit-user-select: none;
-        user-select: none;
-      }
+      <style jsx global>{`
+        html.publicContentGuard body {
+          -webkit-touch-callout: none;
+        }
 
-      html.publicContentGuard input,
-      html.publicContentGuard textarea,
-      html.publicContentGuard select,
-      html.publicContentGuard button,
-      html.publicContentGuard label,
-      html.publicContentGuard [contenteditable="true"],
-      html.publicContentGuard [data-allow-copy] {
-        -webkit-user-select: auto;
-        user-select: auto;
-      }
+        html.publicContentGuard body * {
+          -webkit-user-select: none;
+          user-select: none;
+        }
 
-      html.publicContentGuard img {
-        -webkit-user-drag: none;
-        user-drag: none;
-      }
-    `}</style>
+        html.publicContentGuard input,
+        html.publicContentGuard textarea,
+        html.publicContentGuard select,
+        html.publicContentGuard button,
+        html.publicContentGuard label,
+        html.publicContentGuard [contenteditable="true"],
+        html.publicContentGuard [data-allow-copy] {
+          -webkit-user-select: auto;
+          user-select: auto;
+        }
+
+        html.publicContentGuard img,
+        html.publicContentGuard video {
+          -webkit-user-drag: none;
+          user-drag: none;
+        }
+
+        .publicWatermark {
+          pointer-events: none;
+          position: fixed;
+          inset: 0;
+          z-index: 2147483000;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          align-items: center;
+          justify-items: center;
+          opacity: 0.045;
+          transform: rotate(-18deg);
+          mix-blend-mode: multiply;
+        }
+
+        .publicWatermark span {
+          color: #0f172a;
+          font-size: clamp(18px, 2vw, 30px);
+          font-weight: 900;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+
+          body::before {
+            content: "Printing is restricted for Real Capita Group website content.";
+            visibility: visible !important;
+            display: block;
+            padding: 40px;
+            color: #111827;
+            font-size: 22px;
+            font-weight: 800;
+          }
+        }
+      `}</style>
+    </>
   );
 }
