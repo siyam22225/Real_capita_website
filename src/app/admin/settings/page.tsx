@@ -98,9 +98,10 @@ const settingsItems: SettingsItem[] = [
   {
     title: "SEO Settings",
     description:
-      "Future option for website title, meta description, and search visibility.",
-    status: "COMING SOON",
-    accentClass: "mutedAccent",
+      "Update website title, meta description, social preview, and indexing.",
+    href: "/admin/settings/seo",
+    status: "AVAILABLE",
+    accentClass: "blueAccent",
   },
 ];
 
