@@ -17,7 +17,19 @@ const STATIC_PROFILE_SLUGS = new Set([
   "manzur-ahammad-sohan",
 ]);
 
-function normalizeDirector(director: any) {
+type BoardDirectorCard = {
+  slug: string;
+  profileEnabled: boolean;
+  name: string;
+  role: string;
+  education: string;
+  shortMessage: string;
+  image: string;
+  facebook: string;
+  whatsapp: string;
+};
+
+function normalizeDirector(director: any): BoardDirectorCard {
   const slug = director.slug;
 
   return {
@@ -34,7 +46,13 @@ function normalizeDirector(director: any) {
   };
 }
 
-export async function getBoardDirectorCards() {
+function isDirectorCard(
+  director: BoardDirectorCard | null
+): director is BoardDirectorCard {
+  return director !== null;
+}
+
+export async function getBoardDirectorCards(): Promise<BoardDirectorCard[]> {
   try {
     const dbRows = await prisma.boardDirector.findMany({
       orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
@@ -54,7 +72,7 @@ export async function getBoardDirectorCards() {
           ...(dbDirector || {}),
         });
       })
-      .filter(Boolean);
+      .filter(isDirectorCard);
 
     const extraDirectors = dbRows
       .filter((director) => !fallbackSlugs.has(director.slug))

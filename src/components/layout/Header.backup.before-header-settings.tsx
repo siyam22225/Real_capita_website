@@ -80,9 +80,9 @@ export default function Header() {
   useEffect(() => {
     let mounted = true;
 
-    async function loadHeaderSettings() {
+    async function loadEnterprises() {
       try {
-        const response = await fetch("/api/header-settings", {
+        const response = await fetch("/api/enterprises", {
           cache: "no-store",
         });
 
@@ -90,7 +90,32 @@ export default function Header() {
 
         if (!mounted) return;
 
-        setEnterpriseItems(normalizeEnterprises(json?.enterprises || []));
+        setEnterpriseItems(normalizeEnterprises(json));
+      } catch (error) {
+        console.error("HEADER_ENTERPRISE_MENU_ERROR", error);
+        if (mounted) setEnterpriseItems([]);
+      }
+    }
+
+    loadEnterprises();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadHeaderLogo() {
+      try {
+        const response = await fetch("/api/logo-settings", {
+          cache: "no-store",
+        });
+
+        const json = await response.json();
+
+        if (!mounted) return;
 
         if (json?.mainLogo?.logoUrl) {
           setHeaderLogo({
@@ -98,34 +123,53 @@ export default function Header() {
             altText: json.mainLogo.altText || "Real Capita Group",
           });
         }
-
-        if (json?.clientLogin?.show && json?.clientLogin?.buttonUrl) {
-          setClientLogin({
-            show: true,
-            buttonText: json.clientLogin.buttonText || "Client Login",
-            buttonUrl: json.clientLogin.buttonUrl,
-            openInNewTab: json.clientLogin.openInNewTab !== false,
-          });
-        } else {
-          setClientLogin(null);
-        }
       } catch (error) {
-        console.error("HEADER_SETTINGS_LOAD_ERROR", error);
+        console.error("HEADER_LOGO_LOAD_ERROR", error);
       }
     }
 
-    loadHeaderSettings();
+    loadHeaderLogo();
 
     return () => {
       mounted = false;
     };
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
 
+    async function loadClientLoginSetting() {
+      try {
+        const response = await fetch("/api/client-login-setting", {
+          cache: "no-store",
+        });
 
+        const json = await response.json();
 
+        if (!mounted) return;
 
+        if (json?.show && json?.buttonUrl) {
+          setClientLogin({
+            show: true,
+            buttonText: json.buttonText || "Client Login",
+            buttonUrl: json.buttonUrl,
+            openInNewTab: json.openInNewTab !== false,
+          });
+        } else {
+          setClientLogin(null);
+        }
+      } catch (error) {
+        console.error("HEADER_CLIENT_LOGIN_ERROR", error);
+        if (mounted) setClientLogin(null);
+      }
+    }
 
+    loadClientLoginSetting();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const openAboutMenu = () => {
     if (aboutMenuTimeout.current) clearTimeout(aboutMenuTimeout.current);

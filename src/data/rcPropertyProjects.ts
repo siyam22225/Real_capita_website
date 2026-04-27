@@ -16,6 +16,7 @@ export type RcPropertyProject = {
   fullDescription: string[];
   media: RcPropertyProjectMedia[];
   profilePdf: string;
+  tour360Image?: string;
 };
 
 export const rcPropertyProjects: RcPropertyProject[] = [
@@ -61,6 +62,7 @@ export const rcPropertyProjects: RcPropertyProject[] = [
       },
     ],
     profilePdf: "/voucher/lake-view-apartment-dhaka.pdf",
+    tour360Image: "/images/rc-property-projects/rc-maya-kanon.jpg",
   },
   {
     id: 2,

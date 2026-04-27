@@ -1,22 +1,22 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyAdminToken } from "@/lib/admin-auth";
 
-const CORE_ENTERPRISE_SLUGS = [
+export const runtime = "nodejs";
+
+const CORE_ENTERPRISE_SLUGS = new Set([
   "land-rpcdl",
   "apartment-rchl",
   "hotel-rc-bay",
   "resda",
   "afsen-group",
   "abdf",
-];
+]);
 
 async function requireAdmin() {
   const cookieStore = await cookies();
   const token = cookieStore.get("admin_token")?.value;
-
   if (!token) return null;
 
   try {
@@ -26,177 +26,185 @@ async function requireAdmin() {
   }
 }
 
-const enterpriseSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2),
-  slug: z.string().min(2),
-  description: z.string().min(5),
-  imageUrl: z.string().optional().nullable(),
-  location: z.string().optional().nullable(),
-  buttonText: z.string().optional().nullable(),
-  buttonHref: z.string().optional().nullable(),
-  profileUrl: z.string().optional().nullable(),
-  sortOrder: z.number().int().optional(),
-  isActive: z.boolean().optional(),
-});
-
-const updateSchema = z.object({
-  enterprises: z.array(enterpriseSchema).min(1),
-});
-
-export async function GET() {
-  try {
-    const admin = await requireAdmin();
-
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const enterprises = await prisma.enterprise.findMany({
-      orderBy: { sortOrder: "asc" },
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: enterprises,
-    });
-  } catch (error) {
-    console.error("ADMIN_ENTERPRISES_GET_ERROR", error);
-    return NextResponse.json(
-      { success: false, message: "Server error" },
-      { status: 500 }
-    );
-  }
+function cleanText(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-export async function PATCH(req: Request) {
-  try {
-    const admin = await requireAdmin();
+function makeSlug(value: unknown) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+export async function GET() {
+  const admin = await requireAdmin();
 
-    const body = await req.json();
-    const parsed = updateSchema.safeParse(body);
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { success: false, message: "Invalid enterprise data" },
-        { status: 400 }
-      );
-    }
+  const enterprises = await prisma.enterprise.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
 
-    const updatedEnterprises = [];
+  return NextResponse.json({
+    success: true,
+    data: enterprises,
+    enterprises,
+  });
+}
 
-    for (const item of parsed.data.enterprises) {
-      const data = {
-        name: item.name.trim(),
-        slug: item.slug.trim(),
-        description: item.description,
-        imageUrl: item.imageUrl || null,
-        location: item.location || null,
-        buttonText: item.buttonText || null,
-        buttonHref: item.buttonHref || null,
-        profileUrl: item.profileUrl || null,
-        sortOrder: item.sortOrder ?? 0,
-        isActive: item.isActive ?? true,
-      };
+export async function POST(req: Request) {
+  const admin = await requireAdmin();
 
-      const updated = item.id
-        ? await prisma.enterprise.update({
-            where: { id: item.id },
-            data,
-          })
-        : await prisma.enterprise.upsert({
-            where: { slug: data.slug },
-            update: data,
-            create: data,
-          });
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-      updatedEnterprises.push(updated);
-    }
+  const body = await req.json();
 
-    return NextResponse.json({
-      success: true,
-      message: "Enterprise concerns updated successfully",
-      data: updatedEnterprises,
-    });
-  } catch (error) {
-    console.error("ADMIN_ENTERPRISES_PATCH_ERROR", error);
+  const name = cleanText(body.name);
+  const slug = makeSlug(body.slug || body.name);
+
+  if (!name || !slug) {
     return NextResponse.json(
-      { success: false, message: "Server error" },
-      { status: 500 }
+      { error: "Concern name and valid slug are required." },
+      { status: 400 }
     );
   }
+
+  const enterprise = await prisma.enterprise.create({
+    data: {
+      name,
+      slug,
+      description: cleanText(body.description),
+      imageUrl: cleanText(body.imageUrl || body.image),
+      location: cleanText(body.location),
+      buttonText: cleanText(body.buttonText) || "Visit Website",
+      buttonHref: cleanText(body.buttonHref || body.website) || "#",
+      profileUrl: cleanText(body.profileUrl) || null,
+      sortOrder: Number(body.sortOrder || 0),
+      isActive: body.isActive !== false,
+    },
+  });
+
+  return NextResponse.json({
+    success: true,
+    data: enterprise,
+    enterprise,
+  });
+}
+
+export async function PUT(req: Request) {
+  const admin = await requireAdmin();
+
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+
+  const id = cleanText(body.id);
+  const name = cleanText(body.name);
+  const slug = makeSlug(body.slug || body.name);
+
+  if (!id || !name || !slug) {
+    return NextResponse.json(
+      { error: "Concern id, name, and valid slug are required." },
+      { status: 400 }
+    );
+  }
+
+  const existing = await prisma.enterprise.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    return NextResponse.json(
+      { error: "Concern not found." },
+      { status: 404 }
+    );
+  }
+
+  const enterprise = await prisma.enterprise.update({
+    where: { id },
+    data: {
+      name,
+      slug,
+      description: cleanText(body.description),
+      imageUrl: cleanText(body.imageUrl || body.image),
+      location: cleanText(body.location),
+      buttonText: cleanText(body.buttonText) || "Visit Website",
+      buttonHref: cleanText(body.buttonHref || body.website) || "#",
+      profileUrl: cleanText(body.profileUrl) || null,
+      sortOrder: Number(body.sortOrder || 0),
+      isActive: body.isActive !== false,
+    },
+  });
+
+  if (existing.slug !== enterprise.slug) {
+    await prisma.enterpriseProject.updateMany({
+      where: { enterpriseSlug: existing.slug },
+      data: { enterpriseSlug: enterprise.slug },
+    });
+  }
+
+  return NextResponse.json({
+    success: true,
+    data: enterprise,
+    enterprise,
+  });
 }
 
 export async function DELETE(req: Request) {
-  try {
-    const admin = await requireAdmin();
+  const admin = await requireAdmin();
 
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const body = await req.json();
-    const id = String(body.id || "");
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
 
-    if (!id) {
-      return NextResponse.json(
-        { success: false, message: "Enterprise id is required" },
-        { status: 400 }
-      );
-    }
+  if (!id) {
+    return NextResponse.json(
+      { error: "Concern id is required." },
+      { status: 400 }
+    );
+  }
 
-    const enterprise = await prisma.enterprise.findUnique({
+  const existing = await prisma.enterprise.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    return NextResponse.json(
+      { error: "Concern not found." },
+      { status: 404 }
+    );
+  }
+
+  if (CORE_ENTERPRISE_SLUGS.has(existing.slug)) {
+    const enterprise = await prisma.enterprise.update({
       where: { id },
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-      },
-    });
-
-    if (!enterprise) {
-      return NextResponse.json(
-        { success: false, message: "Enterprise not found" },
-        { status: 404 }
-      );
-    }
-
-    if (CORE_ENTERPRISE_SLUGS.includes(enterprise.slug)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Default enterprise concerns cannot be deleted.",
-        },
-        { status: 403 }
-      );
-    }
-
-    await prisma.enterprise.delete({
-      where: { id },
+      data: { isActive: false },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Enterprise concern deleted successfully",
+      action: "set-inactive",
+      data: enterprise,
     });
-  } catch (error) {
-    console.error("ADMIN_ENTERPRISES_DELETE_ERROR", error);
-    return NextResponse.json(
-      { success: false, message: "Server error" },
-      { status: 500 }
-    );
   }
+
+  await prisma.enterprise.delete({
+    where: { id },
+  });
+
+  return NextResponse.json({
+    success: true,
+    action: "deleted",
+  });
 }

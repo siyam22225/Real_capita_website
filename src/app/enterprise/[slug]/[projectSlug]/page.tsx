@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectMediaGallery from "@/components/enterprise/ProjectMediaGallery";
 import { enterpriseItems } from "@/data/enterprises";
-import { rcPropertyProjects } from "@/data/rcPropertyProjects";
-import { rcHoldingsProjects } from "@/data/rcHoldingsProjects";
-
+import { prisma } from "@/lib/prisma";
+import { getEnterpriseProject } from "@/lib/enterprise-projects";
+import VirtualTour360 from "@/components/enterprise/VirtualTour360";
 type Props = {
   params: Promise<{
     slug: string;
@@ -12,10 +12,49 @@ type Props = {
   }>;
 };
 
+type ProjectEnterprise = {
+  slug: string;
+  name: string;
+  website: string;
+};
+
+async function getProjectEnterprise(slug: string): Promise<ProjectEnterprise | null> {
+  try {
+    const dbEnterprise = await prisma.enterprise.findFirst({
+      where: { slug, isActive: true },
+      select: {
+        slug: true,
+        name: true,
+        buttonHref: true,
+      },
+    });
+
+    if (dbEnterprise) {
+      return {
+        slug: dbEnterprise.slug,
+        name: dbEnterprise.name,
+        website: dbEnterprise.buttonHref || "#",
+      };
+    }
+  } catch (error) {
+    console.error("PROJECT_ENTERPRISE_LOAD_ERROR", error);
+  }
+
+  const fallback = enterpriseItems.find((item) => item.slug === slug);
+
+  if (!fallback) return null;
+
+  return {
+    slug: fallback.slug,
+    name: fallback.name,
+    website: fallback.website,
+  };
+}
+
 export default async function EnterpriseProjectDetailsPage({ params }: Props) {
   const { slug, projectSlug } = await params;
 
-  const enterprise = enterpriseItems.find((item) => item.slug === slug);
+  const enterprise = await getProjectEnterprise(slug);
 
   if (!enterprise) {
     notFound();
@@ -24,23 +63,13 @@ export default async function EnterpriseProjectDetailsPage({ params }: Props) {
   const isRcProperty = enterprise.slug === "land-rpcdl";
   const isRcHoldings = enterprise.slug === "apartment-rchl";
 
-  const projects = isRcProperty
-    ? rcPropertyProjects
-    : isRcHoldings
-      ? rcHoldingsProjects
-      : [];
-
-  const project = projects.find((item) => item.slug === projectSlug);
+const project = await getEnterpriseProject(enterprise.slug, projectSlug);
 
   if (!project) {
     notFound();
   }
 
-  const backLabel = isRcProperty
-    ? "Back to RC Property"
-    : isRcHoldings
-      ? "Back to RC Holdings"
-      : "Back";
+  const backLabel = `Back to ${enterprise.name}`;
 
   const backHref = `/enterprise/${enterprise.slug}`;
 
@@ -79,7 +108,7 @@ export default async function EnterpriseProjectDetailsPage({ params }: Props) {
             <p className="rcgShortDescription">{project.shortDescription}</p>
 
             <div className="rcgFullDescription">
-              {project.fullDescription.map((paragraph, index) => (
+            {project.fullDescription.map((paragraph: string, index: number) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>
@@ -102,6 +131,12 @@ export default async function EnterpriseProjectDetailsPage({ params }: Props) {
                 Download Profile
               </a>
             </div>
+            <VirtualTour360
+  imageUrl={project.tour360Image}
+  title={`${project.name} 360° Virtual Tour`}
+  description="Drag, zoom, and explore the project view interactively."
+/>
+            
 
             <div className="rcgProjectMetaGrid">
               {metaItems.map(([label, value]) => (

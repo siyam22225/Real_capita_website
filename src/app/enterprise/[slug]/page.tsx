@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { enterpriseItems } from "@/data/enterprises";
-import { rcPropertyProjects } from "@/data/rcPropertyProjects";
-import { rcHoldingsProjects } from "@/data/rcHoldingsProjects";
+import { getEnterpriseProjects } from "@/lib/enterprise-projects";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -104,24 +103,11 @@ export default async function EnterpriseDetailsPage({ params }: Props) {
   const isRcProperty = enterprise.slug === "land-rpcdl";
   const isRcHoldings = enterprise.slug === "apartment-rchl";
 
-  const projectItems: ProjectItem[] = isRcProperty
-    ? rcPropertyProjects
-    : isRcHoldings
-      ? rcHoldingsProjects
-      : [];
+const projectItems: ProjectItem[] = await getEnterpriseProjects(enterprise.slug);
 
-  const projectSectionTitle = isRcProperty
-    ? "RC Property Projects"
-    : isRcHoldings
-      ? "RC Holdings Projects"
-      : "";
+  const projectSectionTitle = `${enterprise.name} Projects`;
 
-  const projectSectionDescription = isRcProperty
-    ? "Explore selected RC Property projects with location-focused development and long-term value."
-    : isRcHoldings
-      ? "Explore selected RC Holdings apartment projects with planned residential value and dependable development."
-      : "";
-
+  const projectSectionDescription = `Explore selected ${enterprise.name} projects, features, and development activities.`;
   return (
     <section
       style={{

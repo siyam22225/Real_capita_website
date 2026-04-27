@@ -131,3 +131,52 @@ model BoardDirector {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+model EnterpriseProject {
+  id               String   @id @default(cuid())
+  enterpriseSlug   String
+  slug             String
+  name             String
+  location         String?
+  image            String?
+  shortDescription String?
+  fullDescription  Json?
+  media            Json?
+  profilePdf       String?
+  websiteUrl       String?
+  tour360Image     String?
+  isActive         Boolean  @default(true)
+  displayOrder     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([enterpriseSlug, slug])
+}
+model ClientLoginSetting {
+  id           String   @id @default("main")
+  buttonText   String   @default("Client Login")
+  buttonUrl    String   @default("")
+  isEnabled    Boolean  @default(false)
+  openInNewTab Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+model WebsiteLogoSetting {
+  id        String   @id @default("main")
+  logoUrl   String   @default("/images/logos/Asset 14.png")
+  altText   String   @default("Real Capita Group")
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BrandLogo {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String
+  linkUrl   String?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

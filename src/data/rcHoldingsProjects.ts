@@ -16,6 +16,7 @@ export type RcHoldingsProject = {
   fullDescription: string[];
   media: RcHoldingsProjectMedia[];
   profilePdf: string;
+  tour360Image?: string;
 };
 
 export const rcHoldingsProjects: RcHoldingsProject[] = [

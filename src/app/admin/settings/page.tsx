@@ -57,6 +57,30 @@ const settingsItems: SettingsItem[] = [
     accentClass: "darkAccent",
   },
   {
+  title: "Client Login Button",
+  description:
+    "Update the client login button text, external URL, and visibility.",
+  href: "/admin/settings/client-login",
+  status: "AVAILABLE",
+  accentClass: "blueAccent",
+},
+  {
+  title: "Enterprise Projects",
+  description:
+    "Add, update, activate, and manage project pages under each concern.",
+  href: "/admin/enterprise-projects",
+  status: "AVAILABLE",
+  accentClass: "darkAccent",
+},
+  {
+    title: "Website Logos",
+    description:
+      "Update the main website logo and manage the homepage bottom logo slider.",
+    href: "/admin/settings/logos",
+    status: "AVAILABLE",
+    accentClass: "blueAccent",
+  },
+  {
     title: "Website Settings",
     description:
       "Future option for website name, contact info, and general settings.",

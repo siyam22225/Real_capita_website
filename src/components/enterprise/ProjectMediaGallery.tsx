@@ -57,6 +57,8 @@ export default function ProjectMediaGallery({
             playsInline
             preload="metadata"
             className="project-media-video"
+            controlsList="nodownload"
+onContextMenu={(event) => event.preventDefault()}
           />
         )}
 

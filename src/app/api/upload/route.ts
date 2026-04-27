@@ -19,6 +19,12 @@ async function requireAdminApi() {
   }
 }
 
+function getUploadFolder(fileType: string) {
+  if (fileType.startsWith("video/")) return "videos";
+  if (fileType === "application/pdf") return "documents";
+  return "images";
+}
+
 export async function POST(req: Request) {
   try {
     const admin = await requireAdminApi();
@@ -34,10 +40,7 @@ export async function POST(req: Request) {
     const file = formData.get("file") as File | null;
 
     if (!file) {
-      return NextResponse.json(
-        { error: "No file uploaded." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No file uploaded." }, { status: 400 });
     }
 
     const allowedTypes = [
@@ -47,11 +50,12 @@ export async function POST(req: Request) {
       "image/jpeg",
       "image/png",
       "image/webp",
+      "application/pdf",
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Only video and image files are allowed." },
+        { error: "Only image, video, and PDF files are allowed." },
         { status: 400 }
       );
     }
@@ -59,12 +63,16 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const folderName = file.type.startsWith("video/") ? "videos" : "images";
+    const folderName = getUploadFolder(file.type);
     const uploadDir = path.join(process.cwd(), "public", "uploads", folderName);
 
     await mkdir(uploadDir, { recursive: true });
 
-    const safeName = file.name.replace(/\s+/g, "-").toLowerCase();
+    const safeName = file.name
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9._-]/g, "")
+      .toLowerCase();
+
     const fileName = `${Date.now()}-${safeName}`;
     const filePath = path.join(uploadDir, fileName);
 
@@ -75,9 +83,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Upload failed." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Upload failed." }, { status: 500 });
   }
 }
