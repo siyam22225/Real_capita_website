@@ -368,21 +368,7 @@ export default function Header() {
             )}
           </div>
 
-          <Link
-            href="/properties"
-            className="desktop-menu-btn"
-            style={{
-              textDecoration: "none",
-              color: "#111111",
-              fontSize: "13px",
-              fontWeight: 800,
-              letterSpacing: "0.045em",
-              textTransform: "uppercase",
-              fontFamily: "Arial, Helvetica, sans-serif",
-            }}
-          >
-            Properties
-          </Link>
+       
 
           <div
             style={{ position: "relative", display: "flex", alignItems: "center" }}
@@ -574,9 +560,6 @@ export default function Header() {
                 </div>
               )}
 
-              <Link href="/properties" onClick={() => setMobileMenuOpen(false)}>
-                Properties
-              </Link>
 
               <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
                 Contact

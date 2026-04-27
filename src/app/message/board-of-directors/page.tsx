@@ -1,90 +1,10 @@
-"use client";
+import Link from "next/link";
+import { getBoardDirectorCards } from "@/lib/board-directors";
 
-const directors = [
-  {
-    name: "Mohammad Arifuzzaman",
-    role: "Managing Director & CEO",
-    education: "PhD, Research Fellow; M.S.S (Sociology), MBA (Marketing)",
-    message:
-      "We are committed to responsible growth, stronger planning, and better customer service across every initiative.",
-    image: "/images/message/director-1.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Manzur Ahammad Sohan",
-    role: "Chairman",
-    education: "Hafez",
-    message:
-      "Our goal is to strengthen trust, professionalism, and long-term corporate excellence in every business decision.",
-    image: "/images/message/director-2.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Ishtiak Al Mamoon",
-    role: "Director (Business Development)",
-    education: "Ph.D., SMIEEE, FIEB",
-    message:
-      "We focus on innovation, structured expansion, and value-driven opportunities for sustainable progress.",
-    image: "/images/message/director-3.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Palash Hendry Sen",
-    role: "Director (Administration)",
-    education: "Administration and operational coordination",
-    message:
-      "Strong administration, discipline, and service standards are essential for maintaining corporate quality.",
-    image: "/images/message/director-4.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Md Ali Haider",
-    role: "Executive Director",
-    education: "Executive leadership and field operations",
-    message:
-      "Execution quality and practical decision-making help us deliver projects with reliability and consistency.",
-    image: "/images/message/director-5.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Rabaya Akhter",
-    role: "Director",
-    education: "Corporate leadership and strategic support",
-    message:
-      "We believe modern organizations grow best when vision, commitment, and accountability work together.",
-    image: "/images/message/director-6.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Tania Tanjia",
-    role: "Director",
-    education: "Business and organizational support",
-    message:
-      "Customer confidence, timely service, and long-term care remain central to our values.",
-    image: "/images/message/director-7.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-  {
-    name: "Sushmita Islam",
-    role: "Director",
-    education: "Corporate management and communications",
-    message:
-      "Our commitment is to maintain a dependable, people-focused, and future-oriented business culture.",
-    image: "/images/message/director-8.jpg",
-    facebook: "#",
-    whatsapp: "#",
-  },
-];
+export const dynamic = "force-dynamic";
 
-const featuredDirectors = directors.slice(0, 2);
-const otherDirectors = directors.slice(2);
+type BoardDirectorCard = Awaited<ReturnType<typeof getBoardDirectorCards>>[number];
+
 function SocialLinks({
   facebook,
   whatsapp,
@@ -94,31 +14,15 @@ function SocialLinks({
 }) {
   return (
     <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
-      <a
-        href={facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: "#1877f2", lineHeight: 0 }}
-      >
+      <a href={facebook} target="_blank" rel="noopener noreferrer" style={{ color: "#1877f2", lineHeight: 0 }}>
         <svg viewBox="0 0 24 24" width="40" height="40">
-          <path
-            fill="currentColor"
-            d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.7-1.6H16.7V4.8c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.4V11H7.3v3H10V22h3.5z"
-          />
+          <path fill="currentColor" d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.7-1.6H16.7V4.8c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.4V11H7.3v3H10V22h3.5z" />
         </svg>
       </a>
 
-      <a
-        href={whatsapp}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: "#16a34a", lineHeight: 0 }}
-      >
+      <a href={whatsapp} target="_blank" rel="noopener noreferrer" style={{ color: "#16a34a", lineHeight: 0 }}>
         <svg viewBox="0 0 24 24" width="40" height="40">
-          <path
-            fill="currentColor"
-            d="M20.5 11.8c0 4.8-3.9 8.7-8.8 8.7-1.5 0-2.9-.4-4.2-1.1L3 20.7l1.4-4.1c-.8-1.4-1.2-3-1.2-4.7C3.2 7.1 7.1 3.2 12 3.2s8.5 3.8 8.5 8.6z"
-          />
+          <path fill="currentColor" d="M20.5 11.8c0 4.8-3.9 8.7-8.8 8.7-1.5 0-2.9-.4-4.2-1.1L3 20.7l1.4-4.1c-.8-1.4-1.2-3-1.2-4.7C3.2 7.1 7.1 3.2 12 3.2s8.5 3.8 8.5 8.6z" />
         </svg>
       </a>
     </div>
@@ -129,7 +33,7 @@ function DirectorCard({
   director,
   featured = false,
 }: {
-  director: (typeof directors)[number];
+  director: BoardDirectorCard;
   featured?: boolean;
 }) {
   return (
@@ -147,15 +51,28 @@ function DirectorCard({
         </p>
 
         <p className="board-text">
-          <strong>Message:</strong> {director.message}
+          <strong>Message:</strong> {director.shortMessage}
         </p>
 
-        <SocialLinks facebook={director.facebook} whatsapp={director.whatsapp} />
+        <div className="board-actions">
+          <SocialLinks facebook={director.facebook} whatsapp={director.whatsapp} />
+
+          {director.profileEnabled ? (
+            <Link href={`/message/board-of-directors/${director.slug}`} className="board-profile-btn">
+              View Profile
+            </Link>
+          ) : null}
+        </div>
       </div>
     </div>
   );
 }
-export default function BoardOfDirectorsPage() {
+
+export default async function BoardOfDirectorsPage() {
+  const directors = await getBoardDirectorCards();
+  const featuredDirectors = directors.slice(0, 2);
+  const otherDirectors = directors.slice(2);
+
   return (
     <>
       <section className="board-page">
@@ -166,20 +83,20 @@ export default function BoardOfDirectorsPage() {
           </div>
 
           <div className="board-featured-grid">
-            {featuredDirectors.map((director, index) => (
-              <DirectorCard key={index} director={director} featured />
+            {featuredDirectors.map((director) => (
+              <DirectorCard key={director.slug} director={director} featured />
             ))}
           </div>
 
           <div className="board-others-grid">
-            {otherDirectors.map((director, index) => (
-              <DirectorCard key={index} director={director} />
+            {otherDirectors.map((director) => (
+              <DirectorCard key={director.slug} director={director} />
             ))}
           </div>
         </div>
       </section>
 
-<style jsx global>{`
+      <style>{`
         .board-page {
           background: linear-gradient(180deg, #f8fbfd 0%, #edf6fb 100%);
           padding: 48px 0 72px;
@@ -241,12 +158,8 @@ export default function BoardOfDirectorsPage() {
           box-shadow: 0 20px 42px rgba(15, 23, 42, 0.12);
         }
 
-        .board-card-featured {
-          border-radius: 26px;
-        }
-
-      .board-image-wrap {
-  height: 230px;
+        .board-image-wrap {
+          height: 230px;
           background: #e8eef5;
           overflow: hidden;
         }
@@ -255,14 +168,14 @@ export default function BoardOfDirectorsPage() {
           height: 260px;
         }
 
-     .board-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #eef2f7;
-}
+        .board-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+          display: block;
+          background: #eef2f7;
+        }
 
         .board-content {
           padding: 20px 22px 22px;
@@ -295,56 +208,30 @@ export default function BoardOfDirectorsPage() {
           line-height: 1.75;
         }
 
-        .board-socials {
+        .board-actions {
           display: flex;
           align-items: center;
-          gap: 4px;
-          margin-top: 8px;
-          line-height: 0;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 12px;
         }
 
-        .board-social-link {
-          width: 14px !important;
-          height: 14px !important;
-          min-width: 14px !important;
-          min-height: 14px !important;
-          max-width: 14px !important;
-          max-height: 14px !important;
+        .board-profile-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 42px;
+          padding: 0 18px;
           border-radius: 999px;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
+          background: linear-gradient(135deg, #0ea5e9, #16a34a);
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
           text-decoration: none;
-          background: transparent;
-          border: none;
-          padding: 0 !important;
-          margin: 0 !important;
-          flex-shrink: 0;
-          overflow: hidden;
-          transition: transform 0.18s ease;
-        }
-
-        .board-social-link.facebook {
-          color: #1877f2;
-        }
-
-        .board-social-link.whatsapp {
-          color: #16a34a;
-        }
-
-        .board-social-link:hover {
-          transform: translateY(-1px);
-        }
-
-        .board-social-icon {
-          width: 10px !important;
-          height: 10px !important;
-          min-width: 10px !important;
-          min-height: 10px !important;
-          max-width: 10px !important;
-          max-height: 10px !important;
-          display: block !important;
-          flex-shrink: 0;
+          box-shadow: 0 12px 24px rgba(14, 165, 233, 0.25);
+          white-space: nowrap;
         }
 
         @media (max-width: 1100px) {
@@ -380,6 +267,11 @@ export default function BoardOfDirectorsPage() {
           .board-content,
           .board-content-featured {
             padding: 18px;
+          }
+
+          .board-actions {
+            align-items: flex-start;
+            flex-direction: column;
           }
         }
       `}</style>

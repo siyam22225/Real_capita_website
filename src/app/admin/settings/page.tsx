@@ -64,6 +64,14 @@ const settingsItems: SettingsItem[] = [
     accentClass: "mutedAccent",
   },
   {
+  title: "Board of Directors Settings",
+  description:
+    "Add, update, hide, and reorder Board of Directors profile cards.",
+  href: "/admin/board-directors",
+  status: "AVAILABLE",
+  accentClass: "blueAccent",
+},
+  {
     title: "SEO Settings",
     description:
       "Future option for website title, meta description, and search visibility.",
