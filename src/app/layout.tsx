@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SocialSidebar from "@/components/layout/SocialSidebar";
+import PublicContentProtection from "@/components/common/PublicContentProtection";
 import { prisma } from "@/lib/prisma";
 
 export const revalidate = 300;
@@ -114,6 +115,7 @@ export default function RootLayout({
             "linear-gradient(135deg, #e8f8ff 0%, #dff4ff 45%, #ecfff4 100%)",
         }}
       >
+        <PublicContentProtection />
         <Header />
         <SocialSidebar />
         <main
