@@ -1,6 +1,11 @@
 import Image from "next/image";
+import { getAboutPageContent } from "@/lib/about-pages";
 
-export default function CorporateProfilePage() {
+export const revalidate = 300;
+
+export default async function CorporateProfilePage() {
+  const content = await getAboutPageContent("corporate-profile");
+
   return (
     <section
       style={{
@@ -8,13 +13,7 @@ export default function CorporateProfilePage() {
         padding: "70px 0",
       }}
     >
-      <div
-        style={{
-          maxWidth: "1120px",
-          margin: "0 auto",
-          padding: "0 24px",
-        }}
-      >
+      <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
             background: "#ffffff",
@@ -37,22 +36,16 @@ export default function CorporateProfilePage() {
             }}
           >
             <Image
-              src="/images/corporate-profile.jpg"
-              alt="Corporate Profile"
+              src={content.imageUrl}
+              alt={content.title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 1100px"
-              style={{
-                objectFit: "cover",
-              }}
+              style={{ objectFit: "cover" }}
             />
           </div>
 
-          <div
-            style={{
-              maxWidth: "920px",
-            }}
-          >
+          <div style={{ maxWidth: "920px" }}>
             <div
               style={{
                 width: "72px",
@@ -73,38 +66,22 @@ export default function CorporateProfilePage() {
                 fontWeight: 800,
               }}
             >
-              Corporate Profile
+              {content.title}
             </h1>
 
-            <p
-              style={{
-                margin: "0 0 20px 0",
-                fontSize: "18px",
-                lineHeight: "1.9",
-                color: "#475569",
-              }}
-            >
-              Real Capita Group is a growing corporate organization committed to
-              long-term development, structured planning, and value-driven
-              enterprise expansion. The company focuses on building dependable
-              projects, strengthening customer trust, and maintaining a
-              professional business standard across its activities.
-            </p>
-
-            <p
-              style={{
-                margin: 0,
-                fontSize: "18px",
-                lineHeight: "1.9",
-                color: "#475569",
-              }}
-            >
-              Through its different business initiatives, Real Capita Group aims
-              to create sustainable opportunities, improve service quality, and
-              establish a strong institutional presence in the market. The
-              organization continues to move forward with a vision of
-              reliability, progress, and responsible growth.
-            </p>
+            {content.paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                style={{
+                  margin: index === content.paragraphs.length - 1 ? 0 : "0 0 20px 0",
+                  fontSize: "18px",
+                  lineHeight: "1.9",
+                  color: "#475569",
+                }}
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
       </div>

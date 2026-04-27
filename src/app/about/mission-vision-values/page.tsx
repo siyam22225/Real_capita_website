@@ -1,6 +1,11 @@
 import Image from "next/image";
+import { getAboutPageContent } from "@/lib/about-pages";
 
-export default function MissionVisionValuesPage() {
+export const revalidate = 300;
+
+export default async function MissionVisionValuesPage() {
+  const content = await getAboutPageContent("mission-vision-values");
+
   return (
     <section
       style={{
@@ -8,13 +13,7 @@ export default function MissionVisionValuesPage() {
         padding: "70px 0",
       }}
     >
-      <div
-        style={{
-          maxWidth: "1120px",
-          margin: "0 auto",
-          padding: "0 24px",
-        }}
-      >
+      <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
             background: "#ffffff",
@@ -37,22 +36,16 @@ export default function MissionVisionValuesPage() {
             }}
           >
             <Image
-              src="/images/mission-vision-values.jpg"
-              alt="Mission Vision and Values"
+              src={content.imageUrl}
+              alt={content.title}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 1100px"
-              style={{
-                objectFit: "cover",
-              }}
+              style={{ objectFit: "cover" }}
             />
           </div>
 
-          <div
-            style={{
-              maxWidth: "920px",
-            }}
-          >
+          <div style={{ maxWidth: "920px" }}>
             <div
               style={{
                 width: "72px",
@@ -73,36 +66,22 @@ export default function MissionVisionValuesPage() {
                 fontWeight: 800,
               }}
             >
-              Mission Vision &amp; Values
+              {content.title}
             </h1>
 
-            <p
-              style={{
-                margin: "0 0 20px 0",
-                fontSize: "18px",
-                lineHeight: "1.9",
-                color: "#475569",
-              }}
-            >
-              Our mission is to develop trusted projects and business initiatives
-              that create practical value for customers, partners, and
-              communities. We work with a focus on service quality, long-term
-              planning, and responsible growth.
-            </p>
-
-            <p
-              style={{
-                margin: 0,
-                fontSize: "18px",
-                lineHeight: "1.9",
-                color: "#475569",
-              }}
-            >
-              Our vision is to become a respected and dependable corporate group
-              known for professional excellence, customer confidence, and
-              sustainable progress. Our values are built on integrity,
-              commitment, accountability, innovation, and continuous improvement.
-            </p>
+            {content.paragraphs.map((paragraph, index) => (
+              <p
+                key={index}
+                style={{
+                  margin: index === content.paragraphs.length - 1 ? 0 : "0 0 20px 0",
+                  fontSize: "18px",
+                  lineHeight: "1.9",
+                  color: "#475569",
+                }}
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
       </div>
