@@ -31,6 +31,16 @@ const settingsItems: SettingsItem[] = [
     group: "Access",
   },
   {
+    title: "About Pages",
+    description:
+      "Update Corporate Profile and Mission, Vision & Values page content.",
+    href: "/admin/settings/about-pages",
+    status: "AVAILABLE",
+    accentClass: "purpleAccent",
+    icon: "📘",
+    group: "Website",
+  },
+  {
     title: "Homepage Slider Settings",
     description:
       "Manage homepage hero slider images, order, active status, and button links.",
