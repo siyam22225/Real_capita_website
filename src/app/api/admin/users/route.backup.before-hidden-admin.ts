@@ -83,9 +83,6 @@ export async function GET() {
     }
 
     const users = await prisma.adminUser.findMany({
-      where: {
-        isHiddenFromAdminPanel: false,
-      },
       orderBy: [{ role: "desc" }, { createdAt: "asc" }],
       select: {
         id: true,
