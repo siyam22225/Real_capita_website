@@ -31,12 +31,12 @@ model Video {
   id         String   @id @default(cuid())
   title      String
   videoUrl   String?
-  youtubeUrl String?
   thumbnail  String?
   category   String?
-  sourceType String   @default("youtube") // youtube | raw
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  sourceType String   @default("youtube")
+  youtubeUrl String?
 }
 
 model Enterprise {
@@ -45,16 +45,14 @@ model Enterprise {
   slug        String   @unique
   description String
   imageUrl    String?
-
-  location    String?
-  buttonText  String?
-  buttonHref  String?
-  profileUrl  String?
-  sortOrder   Int      @default(0)
-  isActive    Boolean  @default(true)
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  buttonHref  String?
+  buttonText  String?
+  isActive    Boolean  @default(true)
+  location    String?
+  profileUrl  String?
+  sortOrder   Int      @default(0)
 }
 
 model ContactMessage {
@@ -69,17 +67,16 @@ model ContactMessage {
 }
 
 model AdminUser {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  password    String
-  name        String?
-  role        String   @default("admin") // super_admin | admin
-  isProtected Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  email                  String   @unique
+  password               String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  isActive               Boolean  @default(true)
+  isProtected            Boolean  @default(false)
+  name                   String?
+  role                   String   @default("admin")
   isHiddenFromAdminPanel Boolean  @default(false)
-
 }
 
 model SocialLink {
@@ -92,18 +89,20 @@ model SocialLink {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model HomeSlide {
-  id          String   @id @default(cuid())
-  title       String?
-  subtitle    String?
-  imageUrl    String
-  buttonText  String?
-  buttonHref  String?
-  sortOrder   Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  title      String?
+  subtitle   String?
+  imageUrl   String
+  buttonText String?
+  buttonHref String?
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
+
 model OfficeSetting {
   id        String   @id @default(cuid())
   key       String   @unique
@@ -117,6 +116,7 @@ model OfficeSetting {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model BoardDirector {
   id             String   @id @default(cuid())
   slug           String   @unique
@@ -131,7 +131,7 @@ model BoardDirector {
   isActive       Boolean  @default(true)
   displayOrder   Int      @default(0)
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime @default(now()) @updatedAt
 }
 
 model EnterpriseProject {
@@ -150,10 +150,11 @@ model EnterpriseProject {
   isActive         Boolean  @default(true)
   displayOrder     Int      @default(0)
   createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime @default(now()) @updatedAt
 
   @@unique([enterpriseSlug, slug])
 }
+
 model ClientLoginSetting {
   id           String   @id @default("main")
   buttonText   String   @default("Client Login")
@@ -161,15 +162,16 @@ model ClientLoginSetting {
   isEnabled    Boolean  @default(false)
   openInNewTab Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
+
 model WebsiteLogoSetting {
   id        String   @id @default("main")
   logoUrl   String   @default("/images/logos/Asset 14.png")
   altText   String   @default("Real Capita Group")
   isEnabled Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model BrandLogo {
@@ -180,8 +182,9 @@ model BrandLogo {
   isActive  Boolean  @default(true)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }
+
 model SeoSetting {
   id                     String   @id @default("main")
   siteTitle              String   @default("Real Capita Group")
@@ -193,15 +196,16 @@ model SeoSetting {
   googleVerificationCode String   @default("")
   allowIndexing          Boolean  @default(true)
   createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  updatedAt              DateTime @default(now()) @updatedAt
 }
+
 model AboutPageContent {
   id         String   @id
   pageKey    String   @unique
   title      String
   imageUrl   String
-  paragraphs Json
+  paragraphs Json     @default("[]")
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 }
