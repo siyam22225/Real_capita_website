@@ -158,6 +158,112 @@ export async function PUT(req: Request) {
   });
 }
 
+
+export async function PATCH(req: Request) {
+  const admin = await requireAdmin();
+
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const enterprises = Array.isArray(body.enterprises) ? body.enterprises : [];
+
+  if (enterprises.length === 0) {
+    return NextResponse.json(
+      { success: false, error: "No enterprise concerns provided." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const savedEnterprises = [];
+
+    for (const item of enterprises) {
+      const id = cleanText(item.id);
+      const name = cleanText(item.name);
+      const slug = makeSlug(item.slug || item.name);
+
+      if (!name || !slug) {
+        return NextResponse.json(
+          { success: false, error: "Concern name and valid slug are required." },
+          { status: 400 }
+        );
+      }
+
+      const data = {
+        name,
+        slug,
+        description: cleanText(item.description),
+        imageUrl: cleanText(item.imageUrl || item.image) || "/images/enterprises/enterprise-1.jpg",
+        location: cleanText(item.location),
+        buttonText: cleanText(item.buttonText) || "Visit Website",
+        buttonHref: cleanText(item.buttonHref || item.website) || "#",
+        profileUrl: cleanText(item.profileUrl) || null,
+        sortOrder: Number(item.sortOrder || 0),
+        isActive: item.isActive !== false,
+      };
+
+      if (id) {
+        const existing = await prisma.enterprise.findUnique({
+          where: { id },
+        });
+
+        if (!existing) {
+          return NextResponse.json(
+            { success: false, error: `Concern not found: ${name}` },
+            { status: 404 }
+          );
+        }
+
+        const updated = await prisma.enterprise.update({
+          where: { id },
+          data,
+        });
+
+        if (existing.slug !== updated.slug) {
+          await prisma.enterpriseProject.updateMany({
+            where: { enterpriseSlug: existing.slug },
+            data: { enterpriseSlug: updated.slug },
+          });
+        }
+
+        savedEnterprises.push(updated);
+      } else {
+        const created = await prisma.enterprise.create({
+          data,
+        });
+
+        savedEnterprises.push(created);
+      }
+    }
+
+    const allEnterprises = await prisma.enterprise.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: allEnterprises,
+      enterprises: allEnterprises,
+    });
+  } catch (error) {
+    console.error("ENTERPRISES_PATCH_ERROR", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update enterprise concerns.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
 export async function DELETE(req: Request) {
   const admin = await requireAdmin();
 
