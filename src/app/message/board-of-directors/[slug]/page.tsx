@@ -107,6 +107,22 @@ export default async function DirectorProfilePage({ params }: Props) {
               </div>
             ) : null}
 
+            {director.slug === "mohammad-arifuzzaman" &&
+            director.messageParagraphs?.length ? (
+              <section className="message-section">
+                <div className="message-heading">
+                  <p>Message</p>
+                  <h2>{director.messageTitle}</h2>
+                </div>
+
+                <div className="message-text">
+                  {director.messageParagraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
           </div>
         </section>
       </main>
