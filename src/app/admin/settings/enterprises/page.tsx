@@ -163,7 +163,7 @@ export default function EnterpriseSettingsPage() {
       }
 
       if (!res.ok || !data.success) {
-        setError(data.message || "Failed to delete enterprise concern");
+        setError(data.error || data.message || "Failed to delete enterprise concern");
         return;
       }
 

@@ -166,11 +166,20 @@ export async function DELETE(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
+  let id = cleanText(searchParams.get("id"));
+
+  if (!id) {
+    try {
+      const body = await req.json();
+      id = cleanText(body.id);
+    } catch {
+      id = "";
+    }
+  }
 
   if (!id) {
     return NextResponse.json(
-      { error: "Concern id is required." },
+      { success: false, error: "Concern id is required." },
       { status: 400 }
     );
   }
@@ -181,7 +190,7 @@ export async function DELETE(req: Request) {
 
   if (!existing) {
     return NextResponse.json(
-      { error: "Concern not found." },
+      { success: false, error: "Concern not found." },
       { status: 404 }
     );
   }
@@ -196,15 +205,22 @@ export async function DELETE(req: Request) {
       success: true,
       action: "set-inactive",
       data: enterprise,
+      enterprise,
     });
   }
 
-  await prisma.enterprise.delete({
-    where: { id },
-  });
+  await prisma.$transaction([
+    prisma.enterpriseProject.deleteMany({
+      where: { enterpriseSlug: existing.slug },
+    }),
+    prisma.enterprise.delete({
+      where: { id },
+    }),
+  ]);
 
   return NextResponse.json({
     success: true,
     action: "deleted",
   });
 }
+
